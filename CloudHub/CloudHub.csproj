@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\cloudhub.css" />
+    <Content Include="Content\customer-dashboard.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
@@ -117,6 +118,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CustomerAccountController.cs" />
+    <Compile Include="Controllers\CustomerDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -141,6 +143,8 @@
     <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailVerificationToken.cs" />
+    <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
+    <Compile Include="Models\ViewModel\CustomerProfile.cs" />
     <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
     <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
     <Compile Include="Models\PasswordResetToken.cs" />
@@ -165,6 +169,7 @@
     <Content Include="Views\CustomerAccount\ResetPassword.cshtml" />
     <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
+    <Content Include="Views\CustomerDashboard\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -392,7 +392,7 @@ namespace CloudHub.Controllers
             }
 
             // Temporary destination until customer dashboard exists
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "CustomerDashboard");
         }
 
 
