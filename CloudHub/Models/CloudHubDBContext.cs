@@ -15,5 +15,6 @@ namespace CloudHub.Models
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<EmailVerificationToken> EmailVerificationTokens{ get; set; }
+        public DbSet<PasswordResetToken>PasswordResetTokens{ get; set; }
     }
 }
