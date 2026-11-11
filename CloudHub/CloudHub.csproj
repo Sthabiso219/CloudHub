@@ -116,12 +116,32 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CustomerAccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611111748594_CreateCustomerTable.cs" />
+    <Compile Include="Migrations\202611111748594_CreateCustomerTable.Designer.cs">
+      <DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611111757547_CreateCustomerTable1.cs" />
+    <Compile Include="Migrations\202611111757547_CreateCustomerTable1.Designer.cs">
+      <DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.cs" />
+    <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.Designer.cs">
+      <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\EmailVerificationToken.cs" />
+    <Compile Include="Models\LoginCustomerViewModel.cs" />
+    <Compile Include="Models\RegisterCustomerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\VerificationTokenService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -130,6 +150,10 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\CustomerAccount\Register.cshtml" />
+    <Content Include="Views\CustomerAccount\RegistrationSuccess.cshtml" />
+    <Content Include="Views\CustomerAccount\VerifyEmail.cshtml" />
+    <Content Include="Views\CustomerAccount\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -139,6 +163,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202611111748594_CreateCustomerTable.resx">
+      <DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611111757547_CreateCustomerTable1.resx">
+      <DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611111818267_AddEmailVerificationTokens.resx">
+      <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
