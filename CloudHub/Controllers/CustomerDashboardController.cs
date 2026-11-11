@@ -58,41 +58,109 @@ namespace CloudHub.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> Profile()
         {
             string email = User.Identity.Name;
 
-            if (string.IsNullOrWhiteSpace(email))
+            using (var db = new CloudHubDbContext())
             {
-                return RedirectToAction(
-                    "Login", "CustomerAccount");
+                var customer = await db.Customers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c =>
+                        c.EmailAddress == email);
+
+                if (customer == null || !customer.IsActive)
+                {
+                    return new HttpStatusCodeResult(403);
+                }
+
+                var model = new CustomerProfileViewModel
+                {
+                    CustomerId = customer.CustomerId,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    EmailAddress = customer.EmailAddress,
+                    PhoneNumber = customer.PhoneNumber,
+                    IsEmailVerified = customer.IsEmailVerified,
+                    IsActive = customer.IsActive,
+                    CreatedAt = customer.CreatedAt
+                };
+
+                return View(model);
+            }
+        }
+
+        // EDIT PROFILE - GET
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> EditProfile()
+        {
+            string email = User.Identity.Name;
+
+            using (var db = new CloudHubDbContext())
+            {
+                var customer = await db.Customers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c =>
+                        c.EmailAddress == email);
+
+                if (customer == null || !customer.IsActive)
+                {
+                    return new HttpStatusCodeResult(403);
+                }
+
+                var model = new EditCustomerProfileViewModel
+                {
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    PhoneNumber = customer.PhoneNumber,
+                    EmailAddress = customer.EmailAddress
+                };
+
+                return View(model);
+            }
+        }
+
+        // EDIT PROFILE - POST
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditProfile(
+            EditCustomerProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
             }
 
-            email = email.Trim().ToLowerInvariant();
+            string email = User.Identity.Name;
 
-            var customer = await db.Customers
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c =>
-                    c.EmailAddress == email);
-
-            if (customer == null || !customer.IsActive)
+            using (var db = new CloudHubDbContext())
             {
-                return new HttpStatusCodeResult(403);
+                var customer = await db.Customers
+                    .FirstOrDefaultAsync(c =>
+                        c.EmailAddress == email);
+
+                if (customer == null || !customer.IsActive)
+                {
+                    return new HttpStatusCodeResult(403);
+                }
+
+                customer.FirstName = model.FirstName.Trim();
+                customer.LastName = model.LastName.Trim();
+                customer.PhoneNumber =
+                    string.IsNullOrWhiteSpace(model.PhoneNumber)
+                        ? null
+                        : model.PhoneNumber.Trim();
+
+                await db.SaveChangesAsync();
+
+                TempData["SuccessMessage"] =
+                    "Your profile has been updated successfully.";
+
+                return RedirectToAction("Profile");
             }
-
-            var model = new CustomerProfileViewModel
-            {
-                CustomerId = customer.CustomerId,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                EmailAddress = customer.EmailAddress,
-                PhoneNumber = customer.PhoneNumber,
-                IsEmailVerified = customer.IsEmailVerified,
-                IsActive = customer.IsActive,
-                CreatedAt = customer.CreatedAt
-            };
-
-            return View(model);
         }
 
 

@@ -145,6 +145,7 @@
     <Compile Include="Models\EmailVerificationToken.cs" />
     <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
     <Compile Include="Models\ViewModel\CustomerProfile.cs" />
+    <Compile Include="Models\ViewModel\EditCustomerProfileViewModel.cs" />
     <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
     <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
     <Compile Include="Models\PasswordResetToken.cs" />
@@ -170,6 +171,8 @@
     <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
     <Content Include="Views\CustomerDashboard\Index.cshtml" />
+    <Content Include="Views\CustomerDashboard\Profile.cshtml" />
+    <Content Include="Views\CustomerDashboard\EditProfile.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
