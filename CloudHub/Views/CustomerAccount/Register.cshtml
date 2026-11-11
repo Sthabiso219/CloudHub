@@ -1,131 +1,264 @@
-﻿
-@model CloudHub.Models.ViewModels.RegisterCustomerViewModel
+﻿@model CloudHub.Models.ViewModels.RegisterCustomerViewModel
 
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = "Create your account";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Adds Bootstrap's red outline to a field that failed server validation
+    Func<string, string> inv = name =>
+        ViewData.ModelState.ContainsKey(name) && ViewData.ModelState[name].Errors.Count > 0
+            ? " is-invalid" : "";
+
+    bool hasGeneralError = ViewData.ModelState.ContainsKey(string.Empty)
+        && ViewData.ModelState[string.Empty].Errors.Count > 0;
 }
 
 <section class="auth-section">
-    <div class="auth-card">
+    <div class="auth-card auth-card-wide">
 
         <div class="auth-logo">
-            <i class="fas fa-cloud"></i>
+            <i class="fas fa-cloud-upload-alt"></i>
             <h2>CloudHub</h2>
         </div>
 
         <h3>Create Your Account</h3>
+        <p class="auth-subtitle">Join CloudHub and start deploying today.</p>
 
-        <p class="auth-subtitle">
-            Join CloudHub and start deploying today.
-        </p>
+        @if (hasGeneralError)
+        {
+            <div class="alert alert-danger small py-2" role="alert">
+                <i class="fas fa-circle-exclamation me-1"></i>
+                @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                {
+                    <span>@error.ErrorMessage</span>
+                }
+            </div>
+        }
 
-        @using (Html.BeginForm("Register", "CustomerAccount",
-            FormMethod.Post))
+        @* ---------- Social sign-up (buttons only for now) ---------- *@
+        <div class="auth-social">
+            <button type="button" class="btn auth-social-btn" data-provider="GitHub">
+                <i class="fab fa-github"></i> GitHub
+            </button>
+            <button type="button" class="btn auth-social-btn" data-provider="Google">
+                <svg viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                </svg>
+                Google
+            </button>
+        </div>
+        <p class="auth-social-note" id="socialNote" role="status" hidden></p>
+
+        <div class="auth-divider"><span>or register with your email</span></div>
+
+        @using (Html.BeginForm("Register", "CustomerAccount", FormMethod.Post,
+            new { id = "registerForm", novalidate = "novalidate" }))
         {
             @Html.AntiForgeryToken()
 
-            @Html.ValidationSummary(true, "",
-                     new { @class = "text-danger" })
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.FirstName)
-                @Html.TextBoxFor(m => m.FirstName,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "First Name"
-                         })
-                @Html.ValidationMessageFor(m => m.FirstName, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.LastName)
-                @Html.TextBoxFor(m => m.LastName,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Last Name"
-                         })
-                @Html.ValidationMessageFor(m => m.LastName, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.EmailAddress)
-                @Html.TextBoxFor(m => m.EmailAddress,
-                         new
-                         {
-                             @class = "form-control",
-                             type = "email",
-                             placeholder = "Email Address"
-                         })
-                @Html.ValidationMessageFor(m => m.EmailAddress, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.PhoneNumber)
-                @Html.TextBoxFor(m => m.PhoneNumber,
-                         new
-                         {
-                             @class = "form-control",
-                             type = "tel",
-                             placeholder = "Phone Number"
-                         })
-                @Html.ValidationMessageFor(m => m.PhoneNumber, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Password"
-                         })
-                @Html.ValidationMessageFor(m => m.Password, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Confirm Password"
-                         })
-                @Html.ValidationMessageFor(m => m.ConfirmPassword, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                <div class="form-check">
-                    @Html.CheckBoxFor(m => m.AcceptTerms,
-                             new { @class = "form-check-input" })
-
-                    @Html.LabelFor(m => m.AcceptTerms,
-                             new { @class = "form-check-label" })
+            <div class="row gx-3">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FirstName, "First name")
+                        <div class="auth-input">
+                            <i class="far fa-user ai"></i>
+                            @Html.TextBoxFor(m => m.FirstName, new
+                            {
+                                @class = "form-control" + inv("FirstName"),
+                                placeholder = "John",
+                                autocomplete = "given-name"
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                    </div>
                 </div>
-
-                @Html.ValidationMessageFor(m => m.AcceptTerms, "",
-                         new { @class = "text-danger" })
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LastName, "Last name")
+                        <div class="auth-input">
+                            <i class="far fa-user ai"></i>
+                            @Html.TextBoxFor(m => m.LastName, new
+                            {
+                                @class = "form-control" + inv("LastName"),
+                                placeholder = "Smith",
+                                autocomplete = "family-name"
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" class="btn auth-submit-btn">
-                Register Account
-            </button>
+            <div class="form-group">
+                @Html.LabelFor(m => m.EmailAddress, "Email address")
+                <div class="auth-input">
+                    <i class="far fa-envelope ai"></i>
+                    @Html.TextBoxFor(m => m.EmailAddress, new
+                    {
+                        @class = "form-control" + inv("EmailAddress"),
+                        type = "email",
+                        placeholder = "you@example.com",
+                        autocomplete = "email"
+                    })
+                </div>
+                @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.PhoneNumber, "Phone number")
+                <div class="auth-input">
+                    <i class="fas fa-phone ai"></i>
+                    @Html.TextBoxFor(m => m.PhoneNumber, new
+                    {
+                        @class = "form-control" + inv("PhoneNumber"),
+                        type = "tel",
+                        placeholder = "082 123 4567",
+                        autocomplete = "tel"
+                    })
+                </div>
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, "Password")
+                <div class="auth-input">
+                    <i class="fas fa-lock ai"></i>
+                    @Html.PasswordFor(m => m.Password, new
+                    {
+                        @class = "form-control has-toggle" + inv("Password"),
+                        placeholder = "Create a password",
+                        autocomplete = "new-password"
+                    })
+                    <button type="button" class="auth-toggle" data-target="Password"
+                            aria-label="Show password">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <div class="pw-meter" id="pwMeter" data-level="0" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="pw-hint">
+                    <span>Use 8+ characters with letters, numbers and symbols.</span>
+                    <strong id="pwLabel"></strong>
+                </div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ConfirmPassword, "Confirm password")
+                <div class="auth-input">
+                    <i class="fas fa-lock ai"></i>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new
+                    {
+                        @class = "form-control has-toggle" + inv("ConfirmPassword"),
+                        placeholder = "Re-enter your password",
+                        autocomplete = "new-password"
+                    })
+                    <button type="button" class="auth-toggle" data-target="ConfirmPassword"
+                            aria-label="Show password">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <div class="pw-hint"><span id="matchText" aria-live="polite"></span></div>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group auth-terms">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.AcceptTerms, new { @class = "form-check-input" })
+                    <label class="form-check-label" for="AcceptTerms">
+                        I agree to the <a href="#" target="_blank" rel="noopener">Terms and Conditions</a>
+                        and <a href="#" target="_blank" rel="noopener">Privacy Policy</a>.
+                    </label>
+                </div>
+                @Html.ValidationMessageFor(m => m.AcceptTerms, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn auth-submit-btn" id="registerBtn">Register Account</button>
+
+            <p class="auth-secure-note">
+                <i class="fas fa-shield-halved"></i>
+                Your password is encrypted and never stored in plain text.
+            </p>
         }
 
         <p class="auth-bottom-text">
             Already have an account?
-            <a href="@Url.Action("Login", "CustomerAccount")">
-                Sign in
-            </a>
+            <a href="@Url.Action("Login", "CustomerAccount")">Sign in</a>
         </p>
 
     </div>
 </section>
+
+@section scripts {
+    <script>(function () {
+            // Show / hide password
+            document.querySelectorAll('.auth-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var input = document.getElementById(btn.getAttribute('data-target'));
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+                    btn.firstElementChild.className = show ? 'far fa-eye-slash' : 'far fa-eye';
+                });
+            });
+
+            // Password strength (guidance only; the server enforces the real rules)
+            var pw = document.getElementById('Password');
+            var confirm = document.getElementById('ConfirmPassword');
+            var meter = document.getElementById('pwMeter');
+            var label = document.getElementById('pwLabel');
+            var matchText = document.getElementById('matchText');
+            var names = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+
+            function score(v) {
+                if (!v) return 0;
+                var s = 0;
+                if (v.length >= 8) s++;
+                if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
+                if (/\d/.test(v)) s++;
+                if (/[^A-Za-z0-9]/.test(v)) s++;
+                return Math.max(s, 1);
+            }
+
+            function checkMatch() {
+                if (!confirm.value) { matchText.textContent = ''; matchText.className = ''; return; }
+                var ok = confirm.value === pw.value;
+                matchText.textContent = ok ? 'Passwords match' : 'Passwords do not match yet';
+                matchText.className = ok ? 'text-success' : 'text-muted';
+            }
+
+            pw.addEventListener('input', function () {
+                var s = score(pw.value);
+                meter.setAttribute('data-level', s);
+                label.textContent = names[s];
+                checkMatch();
+            });
+            confirm.addEventListener('input', checkMatch);
+
+            // Social buttons are placeholders for now
+            var note = document.getElementById('socialNote');
+            document.querySelectorAll('.auth-social-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    note.textContent = btn.getAttribute('data-provider') +
+                        ' sign-up is coming soon. Please register with your email for now.';
+                    note.hidden = false;
+                });
+            });
+
+            // Prevent double submission
+            var form = document.getElementById('registerForm');
+            var submit = document.getElementById('registerBtn');
+            form.addEventListener('submit', function () {
+                submit.disabled = true;
+                submit.textContent = 'Creating your account...';
+            });
+            window.addEventListener('pageshow', function () {
+                submit.disabled = false;
+                submit.textContent = 'Register Account';
+            });
+        })();</script>
+}

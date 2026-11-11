@@ -1,117 +1,297 @@
-﻿
-@{
-    ViewBag.Title = "Home";
+﻿@{
+    ViewBag.Title = "Cloud hosting and deployment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<section class="hero-section">
-    <div class="container">
+@* ===================== HERO ===================== *@
+<section class="hero-section" id="home">
+    <div class="container hero-inner">
         <div class="row align-items-center">
 
             <div class="col-lg-6 hero-content">
-                <h1>
-                    Deploy. Manage.
-                    <span>Grow.</span>
-                </h1>
+                <h1>Deploy. Manage. Grow.</h1>
 
-                <h3>
-                    Your all-in-one cloud hosting
-                    and deployment platform.
-                </h3>
+                <h3>Your all-in-one cloud hosting<br class="d-none d-md-inline" /> and deployment platform.</h3>
 
                 <p>
-                    Host your applications, connect your
-                    repositories and scale with confidence.
+                    Host your applications, connect your repositories<br class="d-none d-md-inline" />
+                    and scale with confidence.
                 </p>
 
                 <div class="hero-buttons">
-                    <a href="@Url.Action("Register", "CustomerAccount")"
-                       class="btn btn-primary-dark">
-                        Get Started Free
-                    </a>
-
-                    <a href="#features"
-                       class="btn btn-outline-dark">
-                        Learn More
-                    </a>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-primary-dark">Get Started Free</a>
+                    <a href="#features" class="btn btn-outline-light-dark">Learn More</a>
                 </div>
             </div>
 
             <div class="col-lg-6">
-                <div class="hero-illustration">
-                    <div class="server server-one"></div>
-                    <div class="server server-two"></div>
-                    <div class="server server-three"></div>
+                <svg class="hero-art" viewBox="0 0 640 400" role="img" aria-label="Laptop uploading to cloud servers" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#e6e7ea" />
+                            <stop offset="1" stop-color="#c4c7cb" />
+                        </linearGradient>
+                        <linearGradient id="gDeck" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#dfe1e4" />
+                            <stop offset="1" stop-color="#b4b8be" />
+                        </linearGradient>
+                        <linearGradient id="gLip" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#a5aab0" />
+                            <stop offset="1" stop-color="#70767d" />
+                        </linearGradient>
+                        <linearGradient id="gScreen" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#1d2024" />
+                            <stop offset="1" stop-color="#0e1012" />
+                        </linearGradient>
+                        <linearGradient id="gGlare" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#ffffff" stop-opacity=".10" />
+                            <stop offset=".55" stop-color="#ffffff" stop-opacity="0" />
+                        </linearGradient>
+                        <radialGradient id="gShadow" cx=".5" cy=".5" r=".5">
+                            <stop offset="0" stop-color="#000" stop-opacity=".28" />
+                            <stop offset="1" stop-color="#000" stop-opacity="0" />
+                        </radialGradient>
 
-                    <div class="laptop">
-                        <div class="laptop-screen">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <div class="laptop-base"></div>
+                        <!-- one server unit -->
+                        <g id="srv">
+                            <polygon points="0,0 14,-9 204,-9 190,0" fill="#eceef0" />
+                            <rect x="0" y="0" width="190" height="46" rx="4" fill="url(#gFront)" />
+                            <polygon points="190,0 204,-9 204,37 190,46" fill="#a9aeb4" />
+                            <rect x="16" y="15" width="78" height="4" rx="2" fill="#000" opacity=".09" />
+                            <rect x="16" y="26" width="52" height="4" rx="2" fill="#000" opacity=".09" />
+                            <circle cx="166" cy="23" r="4.5" fill="#6d7780" />
+                        </g>
+                    </defs>
+
+                    <!-- floor shadow -->
+                    <ellipse cx="330" cy="352" rx="300" ry="16" fill="url(#gShadow)" />
+
+                    <!-- servers (back, right) -->
+                    <use href="#srv" x="366" y="52" opacity=".30" />
+                    <use href="#srv" x="374" y="108" opacity=".60" />
+                    <use href="#srv" x="382" y="164" />
+                    <use href="#srv" x="390" y="220" />
+                    <use href="#srv" x="398" y="276" />
+
+                    <!-- laptop deck -->
+                    <polygon points="60,285 340,265 390,315 10,335" fill="url(#gDeck)" />
+                    <g stroke="#6b7178" stroke-opacity=".45" stroke-width="6" stroke-dasharray="15 3" fill="none">
+                        <line x1="73" y1="292.5" x2="327" y2="275.5" />
+                        <line x1="67" y1="298.5" x2="333" y2="281.5" />
+                        <line x1="61" y1="304.5" x2="339" y2="287.5" />
+                        <line x1="55" y1="310.5" x2="345" y2="293.5" />
+                    </g>
+                    <polygon points="150,311 250,305 250,317 150,323" fill="#c9ccd0" stroke="#9da2a8" stroke-width="1" />
+                    <polygon points="10,335 390,315 388,323 14,343" fill="url(#gLip)" />
+
+                    <!-- laptop screen -->
+                    <polygon points="60,55 340,85 340,265 60,285" fill="#23272b" stroke="#3a3f45" stroke-width="1" />
+                    <polygon points="72,69 328,96 328,254 72,271" fill="url(#gScreen)" />
+                    <polygon points="72,69 328,96 328,254 72,271" fill="url(#gGlare)" />
+
+                    <!-- cloud + upload arrow -->
+                    <g transform="matrix(0.96 0.105 0 1 200 172)">
+                        <g fill="#ffffff">
+                            <circle cx="-30" cy="8" r="23" />
+                            <circle cx="-2" cy="-10" r="32" />
+                            <circle cx="32" cy="6" r="25" />
+                            <rect x="-53" y="6" width="110" height="25" rx="12.5" />
+                        </g>
+                        <rect x="-5" y="-6" width="10" height="34" rx="2" fill="#1a1d21" />
+                        <polygon points="-21,2 0,-24 21,2" fill="#1a1d21" />
+                    </g>
+                </svg>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@* ===================== FEATURE STRIP (overlaps the hero) ===================== *@
+<div class="hero-strip-wrap">
+    <div class="container">
+        <div class="hero-strip">
+            <div class="strip-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                <span>Instant Deployments</span>
+            </div>
+            <div class="strip-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /><line x1="14" y1="4" x2="10" y2="20" /></svg>
+                <span>GitHub Integration</span>
+            </div>
+            <div class="strip-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="4" height="9" rx="1" /><rect x="10" y="7" width="4" height="14" rx="1" /><rect x="17" y="3" width="4" height="18" rx="1" /></svg>
+                <span>Real-Time Monitoring</span>
+            </div>
+            <div class="strip-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /></svg>
+                <span>Secure &amp; Reliable</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===================== FEATURES ===================== *@
+<section id="features" class="ch-section">
+    <div class="container">
+        <div class="ch-heading">
+            <h2>Everything you need to host and ship</h2>
+            <p>One platform to deploy, manage and monitor your web applications.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-bolt"></i><h5>Deploy Your Way</h5><p>Use GitHub, publish from Visual Studio, or upload a ZIP package.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fab fa-github"></i><h5>GitHub Integration</h5><p>Authorise with OAuth, then choose a repository and branch.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-sync-alt"></i><h5>Automatic Deployments</h5><p>Push to your branch and CloudHub builds and publishes it.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-list-alt"></i><h5>Build &amp; Deploy Logs</h5><p>Follow every deployment and review failures when they happen.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-chart-bar"></i><h5>Resource Monitoring</h5><p>Track storage, availability, CPU and memory on your dashboard.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-database"></i><h5>SQL Server Databases</h5><p>Request and manage databases alongside your projects.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-credit-card"></i><h5>Simple Billing</h5><p>Upgrade or cancel anytime and view invoices and payments.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="feature-card"><i class="fas fa-shield-alt"></i><h5>Secure &amp; Reliable</h5><p>Isolated builds, protected credentials and private projects.</p></div></div>
+        </div>
+    </div>
+</section>
+
+@* ===================== HOW IT WORKS ===================== *@
+<section id="how-it-works" class="ch-section ch-section-alt">
+    <div class="container">
+        <div class="ch-heading">
+            <h2>From code to a live URL in three steps</h2>
+            <p>Create a project, add your code, and CloudHub handles the rest.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4"><div class="ch-step-card"><span class="ch-step-number">1</span><h3>Create a project</h3><p>Name it, choose ASP.NET MVC 5 or a static website, and pick a hosting plan.</p></div></div>
+            <div class="col-md-4"><div class="ch-step-card"><span class="ch-step-number">2</span><h3>Add your code</h3><p>Connect a GitHub repository and branch, publish from Visual Studio, or upload a ZIP.</p></div></div>
+            <div class="col-md-4"><div class="ch-step-card"><span class="ch-step-number">3</span><h3>Go live</h3><p>CloudHub builds your app and gives you a public URL once it is confirmed running.</p></div></div>
+        </div>
+    </div>
+</section>
+
+@* ===================== PRICING ===================== *@
+<section id="pricing" class="ch-section">
+    <div class="container">
+        <div class="ch-heading">
+            <h2>Simple cloud hosting prices</h2>
+            <p>Start free and upgrade when your projects grow.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-xl-3">
+                <div class="ch-plan">
+                    <h3>Starter</h3>
+                    <p class="ch-plan-for">Try CloudHub for free</p>
+                    <p class="ch-price"><strong>R0</strong><span>/month</span></p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> 1 small project</li>
+                        <li><i class="fas fa-check"></i> Limited storage</li>
+                        <li><i class="fas fa-check"></i> Basic deployment</li>
+                        <li><i class="fas fa-check"></i> Basic resource monitoring</li>
+                    </ul>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-outline-dark w-100">Start Free</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="ch-plan">
+                    <h3>Developer</h3>
+                    <p class="ch-plan-for">For students and side projects</p>
+                    <p class="ch-price"><strong>R99</strong><span>/month</span></p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> 2 projects</li>
+                        <li><i class="fas fa-check"></i> 2 GB storage</li>
+                        <li><i class="fas fa-check"></i> SSL support</li>
+                        <li><i class="fas fa-check"></i> Deployment history</li>
+                    </ul>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-outline-dark w-100">Choose Developer</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="ch-plan ch-plan-featured">
+                    <span class="ch-badge">Most popular</span>
+                    <h3>Professional</h3>
+                    <p class="ch-plan-for">For serious applications</p>
+                    <p class="ch-price"><strong>R249</strong><span>/month</span></p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> 5 projects</li>
+                        <li><i class="fas fa-check"></i> 10 GB storage</li>
+                        <li><i class="fas fa-check"></i> Database allowance</li>
+                        <li><i class="fas fa-check"></i> Application monitoring</li>
+                        <li><i class="fas fa-check"></i> Deployment management</li>
+                    </ul>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-get-started w-100">Choose Professional</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="ch-plan">
+                    <h3>Business</h3>
+                    <p class="ch-plan-for">For growing businesses</p>
+                    <p class="ch-price"><strong>R499</strong><span>/month</span></p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Higher project limits</li>
+                        <li><i class="fas fa-check"></i> 25 GB storage</li>
+                        <li><i class="fas fa-check"></i> Database allowance</li>
+                        <li><i class="fas fa-check"></i> Backup allowance</li>
+                        <li><i class="fas fa-check"></i> Priority support</li>
+                    </ul>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-outline-dark w-100">Choose Business</a>
+                </div>
+            </div>
+        </div>
+        <p class="ch-fineprint">Prices are in South African rand per month. Plan limits may change as the platform grows.</p>
+    </div>
+</section>
+
+@* ===================== SUPPORT ===================== *@
+<section id="support" class="ch-section ch-section-alt">
+    <div class="container">
+        <div class="ch-heading">
+            <h2>Need assistance?</h2>
+            <p>Find quick answers below, or send a ticket from your dashboard.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="accordion ch-faq" id="faq">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">How do I deploy my application?</button></h3>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faq"><div class="accordion-body">Create a project, then choose GitHub, Visual Studio publishing or ZIP upload. CloudHub builds and publishes your application and records every step in the deployment log.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">How do I connect GitHub?</button></h3>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Open your project, choose Connect GitHub Repository and authorise CloudHub on GitHub. Then select a repository and branch. You can disconnect at any time.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Which technologies are supported?</button></h3>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">ASP.NET MVC 5 applications and static websites (HTML, CSS and JavaScript) are supported first. More frameworks are planned.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">Can I change or cancel my plan?</button></h3>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Yes. You can upgrade at any time. You can downgrade as long as your projects and storage fit within the smaller plan, and you can cancel from your billing page.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">Is my code kept private?</button></h3>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Yes. You can only access your own projects, logs and files. Builds run in isolated environments, and credentials and access tokens are stored securely.</div></div>
                     </div>
                 </div>
             </div>
 
+            <div class="col-lg-5">
+                <div class="ch-support-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>Talk to our support team</h3>
+                    <p>Create an account to submit tickets, follow replies and track your request. Business plan customers receive priority support.</p>
+                    <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-get-started w-100 mb-2">Create an Account</a>
+                    <a href="@Url.Action("Login", "CustomerAccount")" class="btn ch-btn-ghost w-100">Log in to open a ticket</a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section id="features" class="features-section">
-    <div class="container">
-        <div class="row g-4">
-
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card">
-                    <i class="fas fa-bolt"></i>
-                    <h5>Instant Deployments</h5>
-                    <p>Deploy applications with ease.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card">
-                    <i class="fas fa-code"></i>
-                    <h5>GitHub Integration</h5>
-                    <p>Connect your repositories.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card">
-                    <i class="fas fa-chart-bar"></i>
-                    <h5>Real-Time Monitoring</h5>
-                    <p>Monitor your applications.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card">
-                    <i class="fas fa-shield-alt"></i>
-                    <h5>Secure &amp; Reliable</h5>
-                    <p>Built with security in mind.</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<section id="pricing" class="info-section">
+@* ===================== FINAL CTA ===================== *@
+<section class="ch-cta">
     <div class="container text-center">
-        <h2>Simple Cloud Hosting</h2>
-        <p>
-            Choose a hosting plan that suits your project.
-            Plan details will be available soon.
-        </p>
-    </div>
-</section>
-
-<section id="support" class="info-section support-section">
-    <div class="container text-center">
-        <h2>Need Assistance?</h2>
-        <p>
-            CloudHub support will help you get started
-            with your hosting journey.
-        </p>
+        <h2>Ready to publish your first application?</h2>
+        <p>Create a free account and deploy your first project today.</p>
+        <a href="@Url.Action("Register", "CustomerAccount")" class="btn btn-get-started">Get Started Free</a>
     </div>
 </section>
