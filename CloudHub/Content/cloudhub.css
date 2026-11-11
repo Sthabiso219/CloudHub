@@ -319,3 +319,117 @@ body {
         height: 250px;
     }
 }
+
+/* CUSTOMER AUTHENTICATION PAGES */
+
+.auth-section {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 55px 20px;
+    background: linear-gradient( 135deg, #ffffff 0%, #f3f4f6 65%, #e7e9ec 100% );
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 40px 35px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.10);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+    .auth-logo i {
+        font-size: 40px;
+        color: #202428;
+        margin-bottom: 10px;
+    }
+
+    .auth-logo h2 {
+        font-size: 25px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+.auth-card h3 {
+    font-size: 22px;
+    font-weight: 750;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 28px;
+}
+
+.auth-card .form-group {
+    margin-bottom: 18px;
+}
+
+.auth-card label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.auth-card .form-control {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e0e3e7;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+    .auth-card .form-control:focus {
+        border-color: #343a40;
+        box-shadow: 0 0 0 3px rgba(32,36,40,0.10);
+    }
+
+.auth-submit-btn {
+    width: 100%;
+    background: #202428;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+}
+
+    .auth-submit-btn:hover {
+        background: #343a40;
+        color: white;
+    }
+
+.auth-bottom-text {
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 25px;
+    margin-bottom: 0;
+}
+
+    .auth-bottom-text a {
+        color: #202428;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+        .auth-bottom-text a:hover {
+            text-decoration: underline;
+        }
+
+.auth-card .text-danger {
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+}
