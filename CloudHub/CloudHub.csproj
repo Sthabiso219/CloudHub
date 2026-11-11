@@ -120,6 +120,7 @@
     <Compile Include="Controllers\CustomerAccountController.cs" />
     <Compile Include="Controllers\CustomerDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LegalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -139,10 +140,21 @@
     <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.Designer.cs">
       <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611112220139_new.cs" />
+    <Compile Include="Migrations\202611112220139_new.Designer.cs">
+      <DependentUpon>202611112220139_new.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.cs" />
+    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.Designer.cs">
+      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailVerificationToken.cs" />
+    <Compile Include="Models\HostingPlan.cs" />
+    <Compile Include="Models\RegistrationSecurity.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
     <Compile Include="Models\ViewModel\CustomerProfile.cs" />
     <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
@@ -170,6 +182,9 @@
     <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
     <Content Include="Views\CustomerDashboard\Index.cshtml" />
+    <Content Include="Views\Legal\Terms.cshtml" />
+    <Content Include="Views\Legal\Privacy.cshtml" />
+    <Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -192,6 +207,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611112030011_AddPasswordResetTokens.resx">
       <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112220139_new.resx">
+      <DependentUpon>202611112220139_new.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.resx">
+      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
