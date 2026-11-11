@@ -133,12 +133,19 @@
     <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.Designer.cs">
       <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.cs" />
+    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.Designer.cs">
+      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailVerificationToken.cs" />
-    <Compile Include="Models\LoginCustomerViewModel.cs" />
-    <Compile Include="Models\RegisterCustomerViewModel.cs" />
+    <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
+    <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
+    <Compile Include="Models\PasswordResetToken.cs" />
+    <Compile Include="Models\ViewModel\RegisterCustomerViewModel.cs" />
+    <Compile Include="Models\ViewModel\ResetPasswordViewMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\VerificationTokenService.cs" />
@@ -154,6 +161,10 @@
     <Content Include="Views\CustomerAccount\RegistrationSuccess.cshtml" />
     <Content Include="Views\CustomerAccount\VerifyEmail.cshtml" />
     <Content Include="Views\CustomerAccount\Login.cshtml" />
+    <Content Include="Views\CustomerAccount\ForgotPassword.cshtml" />
+    <Content Include="Views\CustomerAccount\ResetPassword.cshtml" />
+    <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -173,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611111818267_AddEmailVerificationTokens.resx">
       <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112030011_AddPasswordResetTokens.resx">
+      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

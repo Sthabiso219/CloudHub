@@ -14,6 +14,7 @@ using CloudHub.Services;
 
 
 
+
 namespace CloudHub.Controllers
 {
     public class CustomerAccountController : Controller
@@ -442,6 +443,192 @@ namespace CloudHub.Controllers
                 "Login",
                 "CustomerAccount");
         }
+
+
+        // ==========================================
+        // UC05 - FORGOT PASSWORD
+        // ==========================================
+
+        // GET: CustomerAccount/ForgotPassword
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // POST: CustomerAccount/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ForgotPassword(
+            ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string email = model.EmailAddress
+                .Trim()
+                .ToLowerInvariant();
+
+            Customer customer = await db.Customers
+                .FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            // Always show the same confirmation.
+            // This prevents revealing registered email addresses.
+            if (customer != null && customer.IsActive)
+            {
+                string token =
+                    VerificationTokenService.GenerateToken();
+
+                var resetToken = new PasswordResetToken
+                {
+                    CustomerId = customer.CustomerId,
+                    TokenHash =
+                        VerificationTokenService.HashToken(token),
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+                    UsedAt = null
+                };
+
+                db.PasswordResetTokens.Add(resetToken);
+                await db.SaveChangesAsync();
+
+                string resetLink = Url.Action(
+                    "ResetPassword",
+                    "CustomerAccount",
+                    new { token = token },
+                    protocol: Request.Url.Scheme);
+
+                try
+                {
+                    await emailService.SendPasswordResetEmailAsync(
+                        customer.EmailAddress,
+                        customer.FirstName,
+                        resetLink);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError(
+                        "Password reset email failed: " +
+                        ex.GetType().Name);
+
+                    // Do not reveal delivery details to the visitor.
+                }
+            }
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
+        // GET: CustomerAccount/ForgotPasswordConfirmation
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        // ==========================================
+        // UC05 - RESET PASSWORD
+        // ==========================================
+
+        // GET: CustomerAccount/ResetPassword
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return View("InvalidResetLink");
+            }
+
+            string tokenHash =
+                VerificationTokenService.HashToken(token);
+
+            var reset = await db.PasswordResetTokens
+                .FirstOrDefaultAsync(t =>
+                    t.TokenHash == tokenHash &&
+                    t.UsedAt == null &&
+                    t.ExpiresAt > DateTime.UtcNow);
+
+            if (reset == null)
+            {
+                return View("InvalidResetLink");
+            }
+
+            return View(new ResetPasswordViewModel
+            {
+                Token = token
+            });
+        }
+
+        // POST: CustomerAccount/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ResetPassword(
+            ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string tokenHash =
+                VerificationTokenService.HashToken(model.Token);
+
+            var reset = await db.PasswordResetTokens
+                .Include(t => t.Customer)
+                .FirstOrDefaultAsync(t =>
+                    t.TokenHash == tokenHash &&
+                    t.UsedAt == null &&
+                    t.ExpiresAt > DateTime.UtcNow);
+
+            if (reset == null ||
+                reset.Customer == null ||
+                !reset.Customer.IsActive)
+            {
+                return View("InvalidResetLink");
+            }
+
+            DateTime now = DateTime.UtcNow;
+
+            // Hash the new password
+            reset.Customer.PasswordHash =
+                Crypto.HashPassword(model.NewPassword);
+
+            // Invalidate all outstanding reset links
+            var outstandingTokens = await db.PasswordResetTokens
+                .Where(t =>
+                    t.CustomerId == reset.CustomerId &&
+                    t.UsedAt == null)
+                .ToListAsync();
+
+            foreach (var item in outstandingTokens)
+            {
+                item.UsedAt = now;
+            }
+
+            await db.SaveChangesAsync();
+
+            // Clear authentication cookie if the customer
+            // is currently signed in on this browser.
+            System.Web.Security.FormsAuthentication.SignOut();
+
+            return RedirectToAction("ResetPasswordConfirmation");
+        }
+
+        // GET: CustomerAccount/ResetPasswordConfirmation
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
 
 
         // ==========================================

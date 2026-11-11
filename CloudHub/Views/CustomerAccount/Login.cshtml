@@ -9,6 +9,7 @@
 <section class="auth-section">
     <div class="auth-card">
 
+        <!-- CloudHub Logo -->
         <div class="auth-logo text-center">
             <i class="fas fa-cloud"></i>
             <h2>CloudHub</h2>
@@ -35,6 +36,7 @@
                      true, "",
                      new { @class = "text-danger mb-3" })
 
+            <!-- Email Address -->
             <div class="form-group mb-3">
                 @Html.LabelFor(m => m.EmailAddress)
 
@@ -53,33 +55,59 @@
                          new { @class = "text-danger" })
             </div>
 
+            <!-- Password -->
             <div class="form-group mb-3">
                 @Html.LabelFor(m => m.Password)
 
-                @Html.PasswordFor(
-                         m => m.Password,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Enter your password",
-                             autocomplete = "current-password"
-                         })
+                <div class="input-group">
+                    @Html.PasswordFor(
+                             m => m.Password,
+                             new
+                             {
+                                 @class = "form-control",
+                                 placeholder = "Enter your password",
+                                 autocomplete = "current-password",
+                                 id = "loginPassword"
+                             })
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false">
+                        <i class="fas fa-eye"
+                           id="passwordIcon"></i>
+                    </button>
+                </div>
 
                 @Html.ValidationMessageFor(
                          m => m.Password, "",
                          new { @class = "text-danger" })
             </div>
 
-            <div class="form-check mb-3">
-                @Html.CheckBoxFor(
-                         m => m.RememberMe,
-                         new { @class = "form-check-input" })
+            <!-- Remember Me and Forgot Password -->
+            <div class="d-flex justify-content-between
+                        align-items-center mb-4">
 
-                @Html.LabelFor(
-                         m => m.RememberMe,
-                         new { @class = "form-check-label" })
+                <div class="form-check">
+                    @Html.CheckBoxFor(
+                             m => m.RememberMe,
+                             new { @class = "form-check-input" })
+
+                    @Html.LabelFor(
+                             m => m.RememberMe,
+                             new { @class = "form-check-label" })
+                </div>
+
+                <a href="@Url.Action(
+                    "ForgotPassword",
+                    "CustomerAccount")"
+                   class="text-decoration-none">
+                    Forgot Password?
+                </a>
             </div>
 
+            <!-- Login Button -->
             <button type="submit"
                     class="btn auth-submit-btn w-100">
                 <i class="fas fa-right-to-bracket me-2"></i>
@@ -87,12 +115,53 @@
             </button>
         }
 
+        <!-- Registration Link -->
         <p class="auth-bottom-text text-center mt-4">
             Don't have an account?
-            <a href="@Url.Action("Register", "CustomerAccount")">
+            <a href="@Url.Action(
+                "Register",
+                "CustomerAccount")">
                 Create Account
             </a>
         </p>
 
     </div>
 </section>
+
+@section scripts {
+    <script>document.addEventListener("DOMContentLoaded", function () {
+
+            const passwordInput =
+                document.getElementById("loginPassword");
+
+            const toggleButton =
+                document.getElementById("togglePassword");
+
+            const passwordIcon =
+                document.getElementById("passwordIcon");
+
+            toggleButton.addEventListener("click", function () {
+
+                const isHidden =
+                    passwordInput.type === "password";
+
+                passwordInput.type =
+                    isHidden ? "text" : "password";
+
+                passwordIcon.classList.toggle(
+                    "fa-eye", !isHidden);
+
+                passwordIcon.classList.toggle(
+                    "fa-eye-slash", isHidden);
+
+                toggleButton.setAttribute(
+                    "aria-pressed",
+                    isHidden.toString());
+
+                toggleButton.setAttribute(
+                    "aria-label",
+                    isHidden ? "Hide password" : "Show password");
+            });
+
+        });</script>
+}
