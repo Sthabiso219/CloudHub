@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-6 hero-content">
+                <h1>
+                    Deploy. Manage.
+                    <span>Grow.</span>
+                </h1>
+
+                <h3>
+                    Your all-in-one cloud hosting
+                    and deployment platform.
+                </h3>
+
+                <p>
+                    Host your applications, connect your
+                    repositories and scale with confidence.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="@Url.Action("Register", "CustomerAccount")"
+                       class="btn btn-primary-dark">
+                        Get Started Free
+                    </a>
+
+                    <a href="#features"
+                       class="btn btn-outline-dark">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="hero-illustration">
+                    <div class="server server-one"></div>
+                    <div class="server server-two"></div>
+                    <div class="server server-three"></div>
+
+                    <div class="laptop">
+                        <div class="laptop-screen">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="laptop-base"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="features" class="features-section">
+    <div class="container">
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h5>Instant Deployments</h5>
+                    <p>Deploy applications with ease.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <i class="fas fa-code"></i>
+                    <h5>GitHub Integration</h5>
+                    <p>Connect your repositories.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h5>Real-Time Monitoring</h5>
+                    <p>Monitor your applications.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h5>Secure &amp; Reliable</h5>
+                    <p>Built with security in mind.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="pricing" class="info-section">
+    <div class="container text-center">
+        <h2>Simple Cloud Hosting</h2>
+        <p>
+            Choose a hosting plan that suits your project.
+            Plan details will be available soon.
+        </p>
+    </div>
+</section>
+
+<section id="support" class="info-section support-section">
+    <div class="container text-center">
+        <h2>Need Assistance?</h2>
+        <p>
+            CloudHub support will help you get started
+            with your hosting journey.
+        </p>
+    </div>
+</section>
