@@ -1,12 +1,19 @@
 ﻿
+@model CloudHub.Models.ViewModels.DeploymentPageViewModel
+@using System.Linq
+
 @{
     ViewBag.Title = "Deploy Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    bool hasProjects = Model.Projects != null
+                       && Model.Projects.Any();
 }
 
 <div class="deploy-page">
     <div class="deploy-container">
 
+        <!-- BACK BUTTON -->
         <a href="@Url.Action("Index", "CustomerDashboard")"
            class="deploy-back">
             <i class="fas fa-arrow-left"></i>
@@ -14,12 +21,16 @@
         </a>
 
         <div class="deploy-card">
+
+            <!-- HEADER -->
             <div class="deploy-header">
                 <h1>Deploy Application</h1>
                 <p>Choose a deployment method</p>
             </div>
 
-            <div class="deploy-tabs" role="tablist"
+            <!-- DEPLOYMENT TABS -->
+            <div class="deploy-tabs"
+                 role="tablist"
                  aria-label="Deployment method">
 
                 <button type="button"
@@ -48,26 +59,58 @@
                     <i class="fas fa-file-archive"></i>
                     Upload ZIP
                 </button>
+
             </div>
 
+            <!-- SELECT PROJECT -->
             <div class="deploy-field">
-                <label for="projectSelect">Select Project</label>
-                <select id="projectSelect"
-                        class="deploy-control"
-                        disabled>
-                    <option>
-                        Project integration not configured
-                    </option>
-                </select>
+
+                <label for="ProjectId">
+                    Select Project
+                </label>
+
+                @Html.DropDownListFor(
+                         m => m.ProjectId,
+                         Model.Projects,
+                         "-- Select a project --",
+                         new
+                         {
+                             @class = "deploy-control",
+                             id = "ProjectId"
+                         }
+                     )
+
+                @Html.ValidationMessageFor(
+                         m => m.ProjectId,
+                         "",
+                         new { @class = "text-danger" }
+                     )
+
+                @if (!hasProjects)
+                {
+                    <p class="deploy-note">
+                        You have not created any projects yet.
+                        Create a project before deploying.
+                    </p>
+
+                    <a href="@Url.Action("Index", "CustomerDashboard")"
+                       class="deploy-back">
+                        Return to Dashboard
+                    </a>
+                }
+
             </div>
 
-            <!-- GitHub -->
+            <!-- GITHUB DEPLOYMENT -->
             <section id="githubPanel"
                      class="deploy-panel"
                      data-deploy-panel="github">
+
                 <div class="deploy-panel-heading">
                     <i class="fab fa-github"></i>
+
                     <h2>GitHub Deployment</h2>
+
                     <p>
                         Deploy directly from your GitHub repository.
                     </p>
@@ -77,10 +120,11 @@
                     <label for="repositorySelect">
                         Select Repository
                     </label>
+
                     <select id="repositorySelect"
                             class="deploy-control"
                             disabled>
-                        <option>
+                        <option value="">
                             Connect GitHub to view repositories
                         </option>
                     </select>
@@ -90,29 +134,34 @@
                     <label for="branchSelect">
                         Select Branch
                     </label>
+
                     <select id="branchSelect"
                             class="deploy-control"
                             disabled>
-                        <option>
+                        <option value="">
                             Select a repository first
                         </option>
                     </select>
                 </div>
 
                 <p class="deploy-note">
-                    GitHub connection will be available when
-                    repository integration is configured.
+                    GitHub repository integration has not
+                    been configured yet.
                 </p>
+
             </section>
 
-            <!-- Visual Studio -->
+            <!-- VISUAL STUDIO DEPLOYMENT -->
             <section id="visualstudioPanel"
                      class="deploy-panel"
                      data-deploy-panel="visualstudio"
                      hidden>
+
                 <div class="deploy-panel-heading">
                     <i class="fas fa-code"></i>
+
                     <h2>Visual Studio Deployment</h2>
+
                     <p>
                         Publish your application directly
                         from Visual Studio.
@@ -121,6 +170,7 @@
 
                 <div class="deploy-info">
                     <h3>How it works</h3>
+
                     <ol>
                         <li>Select your CloudHub project.</li>
                         <li>Download its publishing profile.</li>
@@ -137,20 +187,25 @@
                 </button>
 
                 <p class="deploy-note">
-                    Publishing profiles are not yet configured.
+                    Publishing profiles will be available
+                    after the publishing service is configured.
                 </p>
+
             </section>
 
-            <!-- ZIP -->
+            <!-- ZIP DEPLOYMENT -->
             <section id="zipPanel"
                      class="deploy-panel"
                      data-deploy-panel="zip"
                      hidden>
+
                 <div class="deploy-panel-heading">
                     <i class="fas fa-file-archive"></i>
+
                     <h2>Upload ZIP</h2>
+
                     <p>
-                        Upload an application package
+                        Upload your application package
                         for deployment.
                     </p>
                 </div>
@@ -159,6 +214,7 @@
                     <label for="zipFile">
                         Select ZIP File
                     </label>
+
                     <input id="zipFile"
                            type="file"
                            accept=".zip"
@@ -167,52 +223,95 @@
                 </div>
 
                 <p class="deploy-note">
-                    Secure package upload and processing
-                    are not yet configured.
+                    Secure ZIP uploading will be enabled
+                    when the deployment processing service
+                    is ready.
                 </p>
+
             </section>
 
+            <!-- ACTION BUTTONS -->
             <div class="deploy-actions">
+
                 <a href="@Url.Action("Index", "CustomerDashboard")"
                    class="deploy-button deploy-button-outline">
                     Cancel
                 </a>
 
                 <button type="button"
+                        id="startDeployment"
                         class="deploy-button"
                         disabled>
                     Start Deployment
                 </button>
+
             </div>
+
         </div>
     </div>
 </div>
 
-<
+<!-- JAVASCRIPT INSIDE RAZOR VIEW -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         "use strict";
 
-        const tabs = document.querySelectorAll("[data-deploy-tab]");
-        const panels = document.querySelectorAll("[data-deploy-panel]");
+        const tabs =
+            document.querySelectorAll("[data-deploy-tab]");
+
+        const panels =
+            document.querySelectorAll("[data-deploy-panel]");
+
+        const projectSelect =
+            document.getElementById("ProjectId");
+
+        const startButton =
+            document.getElementById("startDeployment");
 
         tabs.forEach(function (tab) {
+
             tab.addEventListener("click", function () {
-                const selectedMethod = tab.dataset.deployTab;
+
+                const selectedMethod =
+                    tab.dataset.deployTab;
 
                 tabs.forEach(function (item) {
+
                     const active =
                         item.dataset.deployTab === selectedMethod;
 
                     item.classList.toggle("active", active);
-                    item.setAttribute("aria-selected", String(active));
+
+                    item.setAttribute(
+                        "aria-selected",
+                        String(active)
+                    );
                 });
 
                 panels.forEach(function (panel) {
+
                     panel.hidden =
                         panel.dataset.deployPanel !== selectedMethod;
+
                 });
+
             });
+
         });
+
+        if (projectSelect) {
+
+            projectSelect.addEventListener("change", function () {
+
+                // Deployment remains disabled until the
+                // selected method has a working backend.
+                if (startButton) {
+                    startButton.disabled = true;
+                }
+
+            });
+
+        }
+
     });
 </script>

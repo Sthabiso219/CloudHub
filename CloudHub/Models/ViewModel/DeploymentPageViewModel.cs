@@ -8,11 +8,9 @@ namespace CloudHub.Models.ViewModels
     public class DeploymentPageViewModel
     {
         [Required(ErrorMessage = "Please select a project.")]
-        [Display(Name = "Select Project")]
         public int? ProjectId { get; set; }
 
-        [Required(ErrorMessage = "Select a deployment method.")]
-        public string DeploymentMethod { get; set; }
+        public string DeploymentMethod { get; set; } = "GitHub";
 
         public string RepositoryName { get; set; }
 

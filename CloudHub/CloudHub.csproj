@@ -149,11 +149,17 @@
     <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.Designer.cs">
       <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.cs" />
+    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.Designer.cs">
+      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Deployment.cs" />
     <Compile Include="Models\EmailVerificationToken.cs" />
     <Compile Include="Models\HostingPlan.cs" />
+    <Compile Include="Models\Project.cs" />
     <Compile Include="Models\RegistrationSecurity.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
@@ -216,6 +222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.resx">
       <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611122012082_AddProjectsAndDeployments.resx">
+      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
