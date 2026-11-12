@@ -1,11 +1,9 @@
-﻿@{
+﻿
+@{
     ViewBag.Title = "Registration Successful";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     string emailStatus = TempData["EmailStatus"] as string;
-    string planName = TempData["PlanName"] as string;
-    string pendingPlan = TempData["PendingPlanName"] as string;
-    string registeredEmail = TempData["RegisteredEmail"] as string;
 
     bool emailSent = !string.IsNullOrEmpty(emailStatus)
         && emailStatus.Contains("has been sent");
@@ -29,25 +27,6 @@
             Welcome to CloudHub!
             Your account has been created successfully.
         </p>
-
-        @if (!string.IsNullOrEmpty(planName))
-        {
-            <div class="alert alert-secondary text-start small">
-                <i class="fas fa-cloud me-2"></i>
-                You are on the <strong>@planName</strong> plan.
-                @if (!string.IsNullOrEmpty(pendingPlan))
-                {
-                    <span>
-                        Your <strong>@pendingPlan</strong> upgrade will start once your payment is confirmed.
-                        You can finish it from your dashboard after you log in.
-                    </span>
-                }
-                else
-                {
-                    <span>You can upgrade at any time from your dashboard.</span>
-                }
-            </div>
-        }
 
         <hr class="my-4" />
 
@@ -80,8 +59,7 @@
 
             <p class="text-muted small mt-3">
                 The verification link expires after 24 hours.
-                If you cannot find the email, check your spam folder or
-                <a href="@Url.Action("ResendVerification", "CustomerAccount", new { email = registeredEmail })">send it again</a>.
+                If you cannot find the email, check your spam folder.
             </p>
         }
         else
@@ -109,16 +87,10 @@
             </div>
 
             <p class="text-muted small mt-3">
-                Your account will remain unverified until you complete email verification.
+                Your account will remain unverified
+                until you complete email verification.
+                Please contact support if the problem continues.
             </p>
-
-            <div class="d-grid mt-3">
-                <a href="@Url.Action("ResendVerification", "CustomerAccount", new { email = registeredEmail })"
-                   class="btn auth-submit-btn">
-                    <i class="fas fa-paper-plane me-2"></i>
-                    Send verification email again
-                </a>
-            </div>
         }
 
         <!-- Navigation Buttons -->

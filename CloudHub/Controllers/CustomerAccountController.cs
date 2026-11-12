@@ -2,10 +2,8 @@
 using System.Web.Mvc;
 using System.Web.Security;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -13,6 +11,9 @@ using System.Web.Helpers;
 using CloudHub.Models;
 using CloudHub.Models.ViewModels;
 using CloudHub.Services;
+
+
+
 
 namespace CloudHub.Controllers
 {
@@ -24,40 +25,16 @@ namespace CloudHub.Controllers
         private readonly EmailService emailService =
             new EmailService();
 
-        // Bump this date whenever the Terms or Privacy Policy change materially.
-        private const string CurrentTermsVersion = "2026-11-12";
-
         // ==========================================
         // UC01 - CUSTOMER REGISTRATION
         // ==========================================
 
-        // GET: CustomerAccount/Register?plan=Developer
+        // GET: CustomerAccount/Register
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> Register(string plan)
+        public ActionResult Register()
         {
-            // Signed-in customers do not need the registration page.
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "CustomerDashboard");
-            }
-
-            var model = new RegisterCustomerViewModel();
-            await PopulatePlansAsync(model);
-
-            // The pricing buttons can link here with ?plan=Name to pre-select a plan.
-            if (!string.IsNullOrWhiteSpace(plan))
-            {
-                HostingPlan match = model.AvailablePlans.FirstOrDefault(p =>
-                    string.Equals(p.Name, plan, StringComparison.OrdinalIgnoreCase));
-
-                if (match != null)
-                {
-                    model.SelectedPlanId = match.HostingPlanId;
-                }
-            }
-
-            return View(model);
+            return View();
         }
 
         // POST: CustomerAccount/Register
@@ -67,73 +44,16 @@ namespace CloudHub.Controllers
         public async Task<ActionResult> Register(
             RegisterCustomerViewModel model)
         {
-            // Bot check: real visitors never see or fill the hidden "Website" field.
-            if (!string.IsNullOrEmpty(model.Website))
-            {
-                return RedirectToAction("RegistrationSuccess");
-            }
-
-            // Rate limit: five attempts per address per hour.
-            if (RegistrationSecurity.IsRateLimited(
-                "register-ip:" + Request.UserHostAddress, 5, TimeSpan.FromHours(1)))
-            {
-                ModelState.AddModelError("",
-                    "Too many registration attempts. Please try again later.");
-
-                await PopulatePlansAsync(model);
-                return View(model);
-            }
-
-            // Load the plans so the choice is checked against the database,
-            // not against whatever the browser sent.
-            List<HostingPlan> plans = await db.HostingPlans
-                .Where(p => p.IsActive)
-                .OrderBy(p => p.DisplayOrder)
-                .ToListAsync();
-
-            HostingPlan starterPlan = plans
-                .OrderBy(p => p.MonthlyPrice)
-                .FirstOrDefault();
-
-            if (starterPlan == null)
-            {
-                ModelState.AddModelError("",
-                    "Registration is temporarily unavailable. Please try again later.");
-
-                await PopulatePlansAsync(model);
-                return View(model);
-            }
-
-            HostingPlan chosenPlan = plans.FirstOrDefault(
-                p => p.HostingPlanId == model.SelectedPlanId);
-
-            if (chosenPlan == null)
-            {
-                ModelState.AddModelError("SelectedPlanId", "Choose a plan.");
-            }
-
-            // Organisation name is required for Business accounts
-            if (model.AccountType == "Business" &&
-                string.IsNullOrWhiteSpace(model.OrganisationName))
-            {
-                ModelState.AddModelError("OrganisationName",
-                    "Enter your organisation name.");
-            }
-
             // Step 1: Validate registration fields
             if (!ModelState.IsValid)
             {
-                await PopulatePlansAsync(model);
                 return View(model);
             }
 
-            // Step 2: Normalize email address and phone number
+            // Step 2: Normalize email address
             string email = model.EmailAddress
                 .Trim()
                 .ToLowerInvariant();
-
-            string phone = RegistrationSecurity.NormalizePhone(
-                model.PhoneNumber.Trim());
 
             // Step 3: Check duplicate email
             bool emailExists = await db.Customers
@@ -145,86 +65,27 @@ namespace CloudHub.Controllers
                     "EmailAddress",
                     "This email address is already registered.");
 
-                await PopulatePlansAsync(model);
                 return View(model);
             }
 
             // Step 4: Create customer
-            string organisation = null;
-            if (model.AccountType != "Individual" &&
-                !string.IsNullOrWhiteSpace(model.OrganisationName))
-            {
-                organisation = model.OrganisationName.Trim();
-            }
-
-            DateTime now = DateTime.UtcNow;
-
             Customer customer = new Customer
             {
                 FirstName = model.FirstName.Trim(),
                 LastName = model.LastName.Trim(),
                 EmailAddress = email,
-                PhoneNumber = phone,
+                PhoneNumber = model.PhoneNumber.Trim(),
 
                 // Hash password before saving
                 PasswordHash = Crypto.HashPassword(
                     model.Password),
 
-                AccountType = model.AccountType,
-                OrganisationName = organisation,
-                PrimaryUse = model.PrimaryUse,
-                PreferredTechnology = model.PreferredTechnology,
-                PreferredDeploymentMethod = model.PreferredDeploymentMethod,
-                MarketingConsent = model.MarketingConsent,
-                TermsAcceptedDate = now,
-                TermsVersion = CurrentTermsVersion,
-
                 IsEmailVerified = false,
                 IsActive = true,
-                CreatedAt = now
+                CreatedAt = DateTime.UtcNow
             };
 
-            // Step 5: Every customer starts on the free plan (SRS: every customer
-            // must have a hosting plan). A paid plan is never activated here,
-            // because payment has not been confirmed. It is recorded as Pending.
-            Subscription starterSubscription = new Subscription
-            {
-                Customer = customer,
-                HostingPlanId = starterPlan.HostingPlanId,
-                Status = SubscriptionStatus.Active,
-                StartDate = now,
-                RenewalDate = null,
-                CreatedAt = now
-            };
-
-            db.Subscriptions.Add(starterSubscription);
-
-            db.SubscriptionHistories.Add(new SubscriptionHistory
-            {
-                Customer = customer,
-                FromPlanId = null,
-                ToPlanId = starterPlan.HostingPlanId,
-                ToPlanName = starterPlan.Name,
-                Reason = "Registered",
-                ChangedAt = now
-            });
-
-            bool wantsPaidPlan = chosenPlan.HostingPlanId != starterPlan.HostingPlanId
-                                 && chosenPlan.MonthlyPrice > 0;
-
-            if (wantsPaidPlan)
-            {
-                db.Subscriptions.Add(new Subscription
-                {
-                    Customer = customer,
-                    HostingPlanId = chosenPlan.HostingPlanId,
-                    Status = SubscriptionStatus.Pending,
-                    StartDate = now,
-                    CreatedAt = now
-                });
-            }
-
-            // Step 6: Generate secure verification token
+            // Step 5: Generate secure verification token
             string rawToken =
                 VerificationTokenService.GenerateToken();
 
@@ -237,12 +98,12 @@ namespace CloudHub.Controllers
                         VerificationTokenService.HashToken(
                             rawToken),
 
-                    CreatedAt = now,
-                    ExpiresAt = now.AddHours(24),
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddHours(24),
                     UsedAt = null
                 };
 
-            // Step 7: Save customer, plan and token together
+            // Step 6: Save customer and token together
             db.Customers.Add(customer);
 
             db.EmailVerificationTokens.Add(
@@ -252,29 +113,17 @@ namespace CloudHub.Controllers
             {
                 await db.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                // Two people registering the same address at once:
-                // the unique index stops the second one.
-                if (IsUniqueViolation(ex))
-                {
-                    ModelState.AddModelError(
-                        "EmailAddress",
-                        "This email address is already registered.");
-                }
-                else
-                {
-                    ModelState.AddModelError(
-                        "",
-                        "Registration could not be completed. " +
-                        "Please check your details and try again.");
-                }
+                ModelState.AddModelError(
+                    "",
+                    "Registration could not be completed. " +
+                    "Please check your details and try again.");
 
-                await PopulatePlansAsync(model);
                 return View(model);
             }
 
-            // Step 8: Generate verification URL
+            // Step 7: Generate verification URL
             string verificationLink = Url.Action(
                 "VerifyEmail",
                 "CustomerAccount",
@@ -282,7 +131,7 @@ namespace CloudHub.Controllers
                 protocol: Request.Url.Scheme
             );
 
-            // Step 9: Send verification email
+            // Step 8: Send verification email
             try
             {
                 await emailService.SendVerificationEmailAsync(
@@ -300,7 +149,8 @@ namespace CloudHub.Controllers
                 // Account remains unverified
                 TempData["EmailStatus"] =
                     "Your account was created, but we " +
-                    "could not send the verification email.";
+                    "could not send the verification email. " +
+                    "Please contact support.";
             }
             catch (Exception)
             {
@@ -310,11 +160,9 @@ namespace CloudHub.Controllers
                     "delivery could not be confirmed.";
             }
 
-            TempData["PlanName"] = starterPlan.Name;
-            TempData["PendingPlanName"] = wantsPaidPlan ? chosenPlan.Name : null;
-            TempData["RegisteredEmail"] = customer.EmailAddress;
 
-            // Step 10: Redirect to success page
+
+            // Step 9: Redirect to success page
             return RedirectToAction(
                 "RegistrationSuccess");
         }
@@ -329,116 +177,6 @@ namespace CloudHub.Controllers
         public ActionResult RegistrationSuccess()
         {
             return View();
-        }
-
-        // ==========================================
-        // RESEND VERIFICATION EMAIL
-        // ==========================================
-
-        // GET: CustomerAccount/ResendVerification
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult ResendVerification(string email)
-        {
-            return View(new ResendVerificationViewModel
-            {
-                EmailAddress = email
-            });
-        }
-
-        // POST: CustomerAccount/ResendVerification
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResendVerification(
-            ResendVerificationViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            if (RegistrationSecurity.IsRateLimited(
-                "resend-ip:" + Request.UserHostAddress, 10, TimeSpan.FromHours(1)))
-            {
-                ModelState.AddModelError("",
-                    "Too many requests. Please try again later.");
-
-                return View(model);
-            }
-
-            string email = model.EmailAddress
-                .Trim()
-                .ToLowerInvariant();
-
-            Customer customer = await db.Customers.FirstOrDefaultAsync(c =>
-                c.EmailAddress == email &&
-                c.IsActive &&
-                !c.IsEmailVerified);
-
-            // The same message is shown whether or not the address exists,
-            // so this page cannot be used to find registered emails.
-            if (customer != null)
-            {
-                DateTime now = DateTime.UtcNow;
-                DateTime cutoff = now.AddMinutes(-2);
-
-                bool sentRecently = await db.EmailVerificationTokens.AnyAsync(t =>
-                    t.CustomerId == customer.CustomerId &&
-                    t.CreatedAt > cutoff);
-
-                if (!sentRecently)
-                {
-                    // Old links stop working once a new one is issued.
-                    var oldTokens = await db.EmailVerificationTokens
-                        .Where(t =>
-                            t.CustomerId == customer.CustomerId &&
-                            t.UsedAt == null)
-                        .ToListAsync();
-
-                    foreach (var old in oldTokens)
-                    {
-                        old.UsedAt = now;
-                    }
-
-                    string rawToken =
-                        VerificationTokenService.GenerateToken();
-
-                    db.EmailVerificationTokens.Add(new EmailVerificationToken
-                    {
-                        CustomerId = customer.CustomerId,
-                        TokenHash = VerificationTokenService.HashToken(rawToken),
-                        CreatedAt = now,
-                        ExpiresAt = now.AddHours(24),
-                        UsedAt = null
-                    });
-
-                    await db.SaveChangesAsync();
-
-                    string link = Url.Action(
-                        "VerifyEmail",
-                        "CustomerAccount",
-                        new { token = rawToken },
-                        protocol: Request.Url.Scheme);
-
-                    try
-                    {
-                        await emailService.SendVerificationEmailAsync(
-                            customer.EmailAddress,
-                            customer.FirstName,
-                            link);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Trace.TraceError(
-                            "Verification resend failed: " +
-                            ex.GetType().Name);
-                    }
-                }
-            }
-
-            ViewBag.Sent = true;
-            return View(model);
         }
 
         // ==========================================
@@ -589,6 +327,11 @@ namespace CloudHub.Controllers
                 .FirstOrDefaultAsync(c => c.EmailAddress == email);
 
             // Validate credentials
+            // Use a dummy hash when the account does not exist
+            // to reduce account-enumeration timing differences.
+            const string dummyPasswordHash =
+                "AQAAAAEAACcQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+
             bool validPassword = false;
 
             if (customer != null)
@@ -596,6 +339,12 @@ namespace CloudHub.Controllers
                 validPassword = Crypto.VerifyHashedPassword(
                     customer.PasswordHash,
                     model.Password);
+            }
+            else
+            {
+                // Do not attempt verification against a fabricated
+                // hash in production. Use a valid precomputed dummy
+                // hash if timing equalization is required.
             }
 
             if (customer == null || !validPassword)
@@ -626,10 +375,6 @@ namespace CloudHub.Controllers
                     "",
                     "Please verify your email address before logging in.");
 
-                // The Login view can show a "Resend verification email" link
-                // when this is true.
-                ViewBag.ShowResend = true;
-                ViewBag.ResendEmail = customer.EmailAddress;
                 ViewBag.ReturnUrl = returnUrl;
                 return View(model);
             }
@@ -884,47 +629,6 @@ namespace CloudHub.Controllers
             return View();
         }
 
-
-        // ==========================================
-        // HELPERS
-        // ==========================================
-
-        // Loads the active plans for the registration page and makes sure
-        // one of them is selected (the cheapest, which is the free plan).
-        private async Task PopulatePlansAsync(RegisterCustomerViewModel model)
-        {
-            model.AvailablePlans = await db.HostingPlans
-                .Where(p => p.IsActive)
-                .OrderBy(p => p.DisplayOrder)
-                .ToListAsync();
-
-            bool selectionValid = model.AvailablePlans
-                .Any(p => p.HostingPlanId == model.SelectedPlanId);
-
-            if (!selectionValid)
-            {
-                HostingPlan free = model.AvailablePlans
-                    .OrderBy(p => p.MonthlyPrice)
-                    .FirstOrDefault();
-
-                model.SelectedPlanId = free != null ? free.HostingPlanId : 0;
-            }
-        }
-
-        // SQL Server error 2601 or 2627 means a unique index was broken.
-        private static bool IsUniqueViolation(Exception ex)
-        {
-            while (ex != null)
-            {
-                SqlException sql = ex as SqlException;
-                if (sql != null && (sql.Number == 2601 || sql.Number == 2627))
-                {
-                    return true;
-                }
-                ex = ex.InnerException;
-            }
-            return false;
-        }
 
 
         // ==========================================
