@@ -1,0 +1,218 @@
+﻿
+@{
+    ViewBag.Title = "Deploy Application";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="deploy-page">
+    <div class="deploy-container">
+
+        <a href="@Url.Action("Index", "CustomerDashboard")"
+           class="deploy-back">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <div class="deploy-card">
+            <div class="deploy-header">
+                <h1>Deploy Application</h1>
+                <p>Choose a deployment method</p>
+            </div>
+
+            <div class="deploy-tabs" role="tablist"
+                 aria-label="Deployment method">
+
+                <button type="button"
+                        class="deploy-tab active"
+                        data-deploy-tab="github"
+                        role="tab"
+                        aria-selected="true">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </button>
+
+                <button type="button"
+                        class="deploy-tab"
+                        data-deploy-tab="visualstudio"
+                        role="tab"
+                        aria-selected="false">
+                    <i class="fas fa-code"></i>
+                    Visual Studio
+                </button>
+
+                <button type="button"
+                        class="deploy-tab"
+                        data-deploy-tab="zip"
+                        role="tab"
+                        aria-selected="false">
+                    <i class="fas fa-file-archive"></i>
+                    Upload ZIP
+                </button>
+            </div>
+
+            <div class="deploy-field">
+                <label for="projectSelect">Select Project</label>
+                <select id="projectSelect"
+                        class="deploy-control"
+                        disabled>
+                    <option>
+                        Project integration not configured
+                    </option>
+                </select>
+            </div>
+
+            <!-- GitHub -->
+            <section id="githubPanel"
+                     class="deploy-panel"
+                     data-deploy-panel="github">
+                <div class="deploy-panel-heading">
+                    <i class="fab fa-github"></i>
+                    <h2>GitHub Deployment</h2>
+                    <p>
+                        Deploy directly from your GitHub repository.
+                    </p>
+                </div>
+
+                <div class="deploy-field">
+                    <label for="repositorySelect">
+                        Select Repository
+                    </label>
+                    <select id="repositorySelect"
+                            class="deploy-control"
+                            disabled>
+                        <option>
+                            Connect GitHub to view repositories
+                        </option>
+                    </select>
+                </div>
+
+                <div class="deploy-field">
+                    <label for="branchSelect">
+                        Select Branch
+                    </label>
+                    <select id="branchSelect"
+                            class="deploy-control"
+                            disabled>
+                        <option>
+                            Select a repository first
+                        </option>
+                    </select>
+                </div>
+
+                <p class="deploy-note">
+                    GitHub connection will be available when
+                    repository integration is configured.
+                </p>
+            </section>
+
+            <!-- Visual Studio -->
+            <section id="visualstudioPanel"
+                     class="deploy-panel"
+                     data-deploy-panel="visualstudio"
+                     hidden>
+                <div class="deploy-panel-heading">
+                    <i class="fas fa-code"></i>
+                    <h2>Visual Studio Deployment</h2>
+                    <p>
+                        Publish your application directly
+                        from Visual Studio.
+                    </p>
+                </div>
+
+                <div class="deploy-info">
+                    <h3>How it works</h3>
+                    <ol>
+                        <li>Select your CloudHub project.</li>
+                        <li>Download its publishing profile.</li>
+                        <li>Open your application in Visual Studio.</li>
+                        <li>Import the profile using Publish.</li>
+                        <li>Publish your application securely.</li>
+                    </ol>
+                </div>
+
+                <button type="button"
+                        class="deploy-button"
+                        disabled>
+                    Download Publish Profile
+                </button>
+
+                <p class="deploy-note">
+                    Publishing profiles are not yet configured.
+                </p>
+            </section>
+
+            <!-- ZIP -->
+            <section id="zipPanel"
+                     class="deploy-panel"
+                     data-deploy-panel="zip"
+                     hidden>
+                <div class="deploy-panel-heading">
+                    <i class="fas fa-file-archive"></i>
+                    <h2>Upload ZIP</h2>
+                    <p>
+                        Upload an application package
+                        for deployment.
+                    </p>
+                </div>
+
+                <div class="deploy-field">
+                    <label for="zipFile">
+                        Select ZIP File
+                    </label>
+                    <input id="zipFile"
+                           type="file"
+                           accept=".zip"
+                           class="deploy-control"
+                           disabled />
+                </div>
+
+                <p class="deploy-note">
+                    Secure package upload and processing
+                    are not yet configured.
+                </p>
+            </section>
+
+            <div class="deploy-actions">
+                <a href="@Url.Action("Index", "CustomerDashboard")"
+                   class="deploy-button deploy-button-outline">
+                    Cancel
+                </a>
+
+                <button type="button"
+                        class="deploy-button"
+                        disabled>
+                    Start Deployment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        "use strict";
+
+        const tabs = document.querySelectorAll("[data-deploy-tab]");
+        const panels = document.querySelectorAll("[data-deploy-panel]");
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                const selectedMethod = tab.dataset.deployTab;
+
+                tabs.forEach(function (item) {
+                    const active =
+                        item.dataset.deployTab === selectedMethod;
+
+                    item.classList.toggle("active", active);
+                    item.setAttribute("aria-selected", String(active));
+                });
+
+                panels.forEach(function (panel) {
+                    panel.hidden =
+                        panel.dataset.deployPanel !== selectedMethod;
+                });
+            });
+        });
+    });
+</script>

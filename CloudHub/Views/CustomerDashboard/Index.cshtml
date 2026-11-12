@@ -59,11 +59,11 @@
                 <small>Soon</small>
             </span>
 
-            <span class="ch-nav-link ch-nav-disabled">
+            <a href="@Url.Action("Index", "Deployment")"
+               class="ch-nav-link">
                 <i class="fas fa-rocket"></i>
-                Deployments
-                <small>Soon</small>
-            </span>
+                <span>Deployments</span>
+            </a>
 
             <span class="ch-nav-link ch-nav-disabled">
                 <i class="fas fa-database"></i>
@@ -153,7 +153,7 @@
                             </a>
                         </li>
 
-                        <li><hr class="dropdown-divider" /></li>
+                      
 
                         <li>
                             @using (Html.BeginForm(

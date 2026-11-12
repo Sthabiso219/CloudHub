@@ -119,6 +119,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CustomerAccountController.cs" />
     <Compile Include="Controllers\CustomerDashboardController.cs" />
+    <Compile Include="Controllers\DeploymentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LegalController.cs" />
     <Compile Include="Global.asax.cs">
@@ -157,6 +158,7 @@
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
     <Compile Include="Models\ViewModel\CustomerProfile.cs" />
+    <Compile Include="Models\ViewModel\DeploymentPageViewModel.cs" />
     <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
     <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
     <Compile Include="Models\PasswordResetToken.cs" />
@@ -185,6 +187,7 @@
     <Content Include="Views\Legal\Terms.cshtml" />
     <Content Include="Views\Legal\Privacy.cshtml" />
     <Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
+    <Content Include="Views\Deployment\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
