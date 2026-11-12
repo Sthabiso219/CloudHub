@@ -2168,3 +2168,89 @@ section[id] {
         transition: none;
     }
 }
+/* ==========================================================================
+   Login page additions. Load after cloudhub-register.css (the Login view
+   links both). Reuses the .reg- layout, fields, buttons and promo panel.
+   ========================================================================== */
+
+.reg-login-submit {
+    width: 100%;
+    margin-left: 0;
+    padding: 13px 24px;
+}
+
+.reg-row-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 2px 0 22px;
+}
+
+.reg-terms.reg-terms-flat {
+    margin: 0;
+}
+
+.reg-forgot {
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--reg-blue-dark);
+    text-decoration: none;
+}
+
+    .reg-forgot:hover {
+        text-decoration: underline;
+    }
+
+    .reg-forgot:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.45);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+.reg-capslock {
+    margin: 7px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8a4b00;
+}
+
+    .reg-capslock[hidden] {
+        display: none;
+    }
+
+    .reg-capslock i {
+        margin-right: 5px;
+    }
+
+/* Disabled social buttons and their "Soon" tag (same as the registration page) */
+.reg-social-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    background: #f6f8fb;
+}
+
+    .reg-social-btn:disabled:hover {
+        background: #f6f8fb;
+        border-color: #d3dbe6;
+    }
+
+.reg-soon {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #e3e9f2;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+}
+
+/* The sign-in form is short, so give it more room at the top */
+.reg-main .reg-social {
+    margin-top: 4px;
+}
+
+@media (max-width: 575px) {
+    .reg-row-between {
+        flex-wrap: wrap;
+    }
+}

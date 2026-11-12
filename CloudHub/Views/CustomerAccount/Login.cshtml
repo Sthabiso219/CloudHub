@@ -1,167 +1,239 @@
-﻿
-@model CloudHub.Models.ViewModels.LoginCustomerViewModel
+﻿@model CloudHub.Models.ViewModels.LoginCustomerViewModel
 
 @{
-    ViewBag.Title = "Customer Login";
+    ViewBag.Title = "Sign in";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Red outline for fields that failed server-side validation
+    Func<string, string> inv = name =>
+        ViewData.ModelState.ContainsKey(name) && ViewData.ModelState[name].Errors.Count > 0
+            ? " is-invalid" : "";
+
+    bool hasGeneralError = ViewData.ModelState.ContainsKey(string.Empty)
+        && ViewData.ModelState[string.Empty].Errors.Count > 0;
 }
 
-<section class="auth-section">
-    <div class="auth-card">
+<link href="@Url.Content("~/Content/cloudhub-register.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/cloudhub-login-additions.css")" rel="stylesheet" />
 
-        <!-- CloudHub Logo -->
-        <div class="auth-logo text-center">
-            <i class="fas fa-cloud"></i>
-            <h2>CloudHub</h2>
+<section class="reg-section">
+    <div class="reg-shell">
+
+        @* ======================= LEFT: SIGN-IN FORM ======================= *@
+        <div class="reg-main">
+
+            <header class="reg-head">
+                <h1>Welcome back</h1>
+                <p class="reg-sub">Sign in to manage your projects and deployments.</p>
+            </header>
+
+            <noscript>
+                <div class="alert alert-warning small">
+                    Some features of this page need JavaScript, but you can still sign in without it.
+                </div>
+            </noscript>
+
+            @if (hasGeneralError)
+            {
+                <div class="alert alert-danger small py-2 reg-general-error" role="alert">
+                    <i class="fas fa-circle-exclamation me-1"></i>
+                    @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+
+                    @if (ViewBag.ShowResend == true)
+                    {
+                        <div class="mt-2">
+                            Didn't get the email?
+                            <a href="@Url.Action("ResendVerification", "CustomerAccount", new { email = ViewBag.ResendEmail })"
+                               class="fw-semibold">Resend verification email</a>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="reg-social">
+                <button type="button" class="reg-social-btn" disabled aria-disabled="true" title="Coming soon">
+                    <i class="fab fa-github"></i> GitHub <span class="reg-soon">Soon</span>
+                </button>
+                <button type="button" class="reg-social-btn" disabled aria-disabled="true" title="Coming soon">
+                    <svg viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                    </svg>
+                    Google <span class="reg-soon">Soon</span>
+                </button>
+            </div>
+            <div class="reg-divider"><span>or sign in with your email</span></div>
+
+            @using (Html.BeginForm("Login", "CustomerAccount",
+                new { returnUrl = ViewBag.ReturnUrl },
+                FormMethod.Post,
+                new { id = "loginForm", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="reg-field">
+                    <label for="EmailAddress">Email address</label>
+                    <div class="reg-input">
+                        <i class="far fa-envelope ai"></i>
+                        @Html.TextBoxFor(m => m.EmailAddress, new
+                        {
+                            @class = "form-control" + inv("EmailAddress"),
+                            type = "email",
+                            placeholder = "you@example.com",
+                            autocomplete = "username",
+                            autofocus = "autofocus"
+                        })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "reg-error" })
+                </div>
+
+                <div class="reg-field">
+                    <label for="Password">Password</label>
+                    <div class="reg-input">
+                        <i class="fas fa-lock ai"></i>
+                        @Html.PasswordFor(m => m.Password, new
+                        {
+                            @class = "form-control has-toggle" + inv("Password"),
+                            placeholder = "Enter your password",
+                            autocomplete = "current-password"
+                        })
+                        <button type="button" class="reg-toggle" id="togglePassword"
+                                aria-label="Show password" aria-pressed="false">
+                            <i class="far fa-eye" id="passwordIcon"></i>
+                        </button>
+                    </div>
+                    <p class="reg-capslock" id="capsNote" role="status" hidden>
+                        <i class="fas fa-triangle-exclamation"></i> Caps Lock is on
+                    </p>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "reg-error" })
+                </div>
+
+                <div class="reg-row-between">
+                    <div class="reg-terms reg-terms-flat">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            <label class="form-check-label" for="RememberMe">Keep me signed in</label>
+                        </div>
+                    </div>
+
+                    <a href="@Url.Action("ForgotPassword", "CustomerAccount")" class="reg-forgot">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="reg-btn reg-btn-next reg-login-submit" id="loginBtn">
+                    Sign in <i class="fas fa-arrow-right"></i>
+                </button>
+            }
+
+            <p class="reg-signin">
+                New to CloudHub?
+                <a href="@Url.Action("Register", "CustomerAccount")">Create an account</a>
+            </p>
         </div>
 
-        <h3 class="text-center mt-3">
-            Welcome Back
-        </h3>
+        @* ======================= RIGHT: PROMO PANEL ======================= *@
+        <aside class="reg-aside" aria-label="About CloudHub">
+            <div class="reg-aside-inner">
+                <h2>Pick up where<br />you left off.</h2>
+                <p>Your projects, deployments and hosting plan are waiting in your dashboard.</p>
 
-        <p class="auth-subtitle text-center">
-            Sign in to your CloudHub account.
-        </p>
-
-        @using (Html.BeginForm(
-            "Login",
-            "CustomerAccount",
-            new { returnUrl = ViewBag.ReturnUrl },
-            FormMethod.Post,
-            new { @class = "mt-4" }))
-        {
-            @Html.AntiForgeryToken()
-
-            @Html.ValidationSummary(
-                     true, "",
-                     new { @class = "text-danger mb-3" })
-
-            <!-- Email Address -->
-            <div class="form-group mb-3">
-                @Html.LabelFor(m => m.EmailAddress)
-
-                @Html.TextBoxFor(
-                         m => m.EmailAddress,
-                         new
-                         {
-                             @class = "form-control",
-                             type = "email",
-                             placeholder = "Enter your email",
-                             autocomplete = "username"
-                         })
-
-                @Html.ValidationMessageFor(
-                         m => m.EmailAddress, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <!-- Password -->
-            <div class="form-group mb-3">
-                @Html.LabelFor(m => m.Password)
-
-                <div class="input-group">
-                    @Html.PasswordFor(
-                             m => m.Password,
-                             new
-                             {
-                                 @class = "form-control",
-                                 placeholder = "Enter your password",
-                                 autocomplete = "current-password",
-                                 id = "loginPassword"
-                             })
-
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            id="togglePassword"
-                            aria-label="Show password"
-                            aria-pressed="false">
-                        <i class="fas fa-eye"
-                           id="passwordIcon"></i>
-                    </button>
+                <div class="reg-orbit" aria-hidden="true">
+                    <span class="ring ring-1"></span>
+                    <span class="ring ring-2"></span>
+                    <span class="hub"><i class="fas fa-cloud-upload-alt"></i></span>
+                    <span class="sat sat-top"><i class="fab fa-github"></i></span>
+                    <span class="sat sat-right"><i class="fas fa-code"></i></span>
+                    <span class="sat sat-bottom"><i class="fas fa-file-zipper"></i></span>
+                    <span class="sat sat-left"><i class="fas fa-database"></i></span>
                 </div>
 
-                @Html.ValidationMessageFor(
-                         m => m.Password, "",
-                         new { @class = "text-danger" })
+                <ul class="reg-benefits">
+                    <li><i class="fas fa-circle-check"></i> Deploy from GitHub, Visual Studio or ZIP</li>
+                    <li><i class="fas fa-circle-check"></i> Follow every build and deployment log</li>
+                    <li><i class="fas fa-circle-check"></i> Manage plans, storage and billing</li>
+                </ul>
             </div>
-
-            <!-- Remember Me and Forgot Password -->
-            <div class="d-flex justify-content-between
-                        align-items-center mb-4">
-
-                <div class="form-check">
-                    @Html.CheckBoxFor(
-                             m => m.RememberMe,
-                             new { @class = "form-check-input" })
-
-                    @Html.LabelFor(
-                             m => m.RememberMe,
-                             new { @class = "form-check-label" })
-                </div>
-
-                <a href="@Url.Action(
-                    "ForgotPassword",
-                    "CustomerAccount")"
-                   class="text-decoration-none">
-                    Forgot Password?
-                </a>
-            </div>
-
-            <!-- Login Button -->
-            <button type="submit"
-                    class="btn auth-submit-btn w-100">
-                <i class="fas fa-right-to-bracket me-2"></i>
-                Login
-            </button>
-        }
-
-        <!-- Registration Link -->
-        <p class="auth-bottom-text text-center mt-4">
-            Don't have an account?
-            <a href="@Url.Action(
-                "Register",
-                "CustomerAccount")">
-                Create Account
-            </a>
-        </p>
+        </aside>
 
     </div>
 </section>
 
 @section scripts {
-    <script>document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('loginForm');
+            var email = document.getElementById('EmailAddress');
+            var password = document.getElementById('Password');
+            var toggle = document.getElementById('togglePassword');
+            var icon = document.getElementById('passwordIcon');
+            var caps = document.getElementById('capsNote');
+            var btn = document.getElementById('loginBtn');
 
-            const passwordInput =
-                document.getElementById("loginPassword");
-
-            const toggleButton =
-                document.getElementById("togglePassword");
-
-            const passwordIcon =
-                document.getElementById("passwordIcon");
-
-            toggleButton.addEventListener("click", function () {
-
-                const isHidden =
-                    passwordInput.type === "password";
-
-                passwordInput.type =
-                    isHidden ? "text" : "password";
-
-                passwordIcon.classList.toggle(
-                    "fa-eye", !isHidden);
-
-                passwordIcon.classList.toggle(
-                    "fa-eye-slash", isHidden);
-
-                toggleButton.setAttribute(
-                    "aria-pressed",
-                    isHidden.toString());
-
-                toggleButton.setAttribute(
-                    "aria-label",
-                    isHidden ? "Hide password" : "Show password");
+            // Show / hide password
+            toggle.addEventListener('click', function () {
+                var show = password.type === 'password';
+                password.type = show ? 'text' : 'password';
+                icon.className = show ? 'far fa-eye-slash' : 'far fa-eye';
+                toggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+                toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
             });
 
-        });</script>
+            // Caps Lock warning
+            function checkCaps(e) {
+                if (e.getModifierState) {
+                    caps.hidden = !e.getModifierState('CapsLock');
+                }
+            }
+            password.addEventListener('keydown', checkCaps);
+            password.addEventListener('keyup', checkCaps);
+            password.addEventListener('blur', function () { caps.hidden = true; });
+
+            // Quick checks before posting. The server still checks everything.
+            function setError(input, text) {
+                var msg = form.querySelector('[data-valmsg-for="' + input.id + '"]');
+                if (msg) {
+                    msg.textContent = text;
+                    msg.className = 'reg-error ' + (text ? 'field-validation-error' : 'field-validation-valid');
+                }
+                input.classList.toggle('is-invalid', !!text);
+                input.setAttribute('aria-invalid', text ? 'true' : 'false');
+            }
+
+            [email, password].forEach(function (input) {
+                input.addEventListener('input', function () { setError(input, ''); });
+            });
+
+            form.addEventListener('submit', function (e) {
+                var bad = null;
+
+                if (!email.value.trim()) { setError(email, 'Enter your email address.'); bad = bad || email; }
+                if (!password.value) { setError(password, 'Enter your password.'); bad = bad || password; }
+
+                if (bad) {
+                    e.preventDefault();
+                    bad.focus();
+                    return;
+                }
+
+                // Block double submission
+                btn.disabled = true;
+                btn.textContent = 'Signing in...';
+            });
+
+            // Browsers restore the page from cache on Back, so re-enable the button
+            window.addEventListener('pageshow', function () {
+                btn.disabled = false;
+                btn.innerHTML = 'Sign in <i class="fas fa-arrow-right"></i>';
+            });
+
+            // After a failed sign-in the password field is empty, so start there
+            if (email.value && document.querySelector('.reg-general-error')) {
+                password.focus();
+            }
+        });
+    </script>
 }
