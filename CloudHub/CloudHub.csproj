@@ -185,6 +185,11 @@
     <Content Include="Views\Legal\Terms.cshtml" />
     <Content Include="Views\Legal\Privacy.cshtml" />
     <Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
+    <Content Include="Views\CustomerDashboard\Profile.cshtml" />
+    <Content Include="Views\Shared\_DashboardLayout.cshtml" />
+    <Content Include="Views\Shared\_PublicNavbar.cshtml" />
+    <Content Include="Views\Shared\_PublicFooter.cshtml" />
+    <Content Include="Views\CustomerDashboard\_ViewStart.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

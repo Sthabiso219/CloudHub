@@ -655,6 +655,103 @@ namespace CloudHub.Controllers
         // UC04 - CUSTOMER LOGOUT
         // ==========================================
 
+        // ==========================================
+        // UC06 - CUSTOMER PROFILE
+        // ==========================================
+
+        // GET: CustomerAccount/Profile
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Profile()
+        {
+            string email = User.Identity.Name;
+
+            Customer customer = await db.Customers
+                .FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (customer == null || !customer.IsActive)
+            {
+                FormsAuthentication.SignOut();
+                return RedirectToAction("Login");
+            }
+
+            CustomerProfileViewModel model = new CustomerProfileViewModel
+            {
+                CustomerId = customer.CustomerId,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                EmailAddress = customer.EmailAddress,
+                PhoneNumber = customer.PhoneNumber,
+                AccountType = customer.AccountType,
+                OrganisationName = customer.OrganisationName,
+                PrimaryUse = customer.PrimaryUse,
+                PreferredTechnology = customer.PreferredTechnology,
+                PreferredDeploymentMethod = customer.PreferredDeploymentMethod,
+                IsEmailVerified = customer.IsEmailVerified,
+                IsActive = customer.IsActive,
+                CreatedAt = customer.CreatedAt
+            };
+
+            return View(model);
+        }
+
+
+        // POST: CustomerAccount/Profile
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Profile(
+            CustomerProfileViewModel model)
+        {
+            string email = User.Identity.Name;
+
+            Customer customer = await db.Customers
+                .FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (customer == null || !customer.IsActive)
+            {
+                FormsAuthentication.SignOut();
+                return RedirectToAction("Login");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Restore read-only properties from the database.
+                model.CustomerId = customer.CustomerId;
+                model.EmailAddress = customer.EmailAddress;
+                model.AccountType = customer.AccountType;
+                model.IsEmailVerified = customer.IsEmailVerified;
+                model.IsActive = customer.IsActive;
+                model.CreatedAt = customer.CreatedAt;
+
+                return View(model);
+            }
+
+            // Update editable fields only.
+            customer.FirstName = model.FirstName.Trim();
+            customer.LastName = model.LastName.Trim();
+
+            customer.PhoneNumber =
+                RegistrationSecurity.NormalizePhone(
+                    model.PhoneNumber.Trim());
+
+            customer.OrganisationName = customer.AccountType == "Business"
+                ? model.OrganisationName?.Trim()
+                : customer.OrganisationName;
+
+            customer.PrimaryUse = model.PrimaryUse?.Trim();
+            customer.PreferredTechnology = model.PreferredTechnology?.Trim();
+            customer.PreferredDeploymentMethod =
+                model.PreferredDeploymentMethod?.Trim();
+
+            await db.SaveChangesAsync();
+
+            TempData["ProfileSuccess"] =
+                "Your profile has been updated successfully.";
+
+            return RedirectToAction("Profile");
+        }
+
         // POST: CustomerAccount/Logout
         [HttpPost]
         [Authorize]

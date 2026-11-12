@@ -1,0 +1,328 @@
+﻿@model CloudHub.Models.ViewModels.CustomerProfileViewModel
+
+@{
+    string fullName = (Model.FirstName + " " + Model.LastName).Trim();
+
+    ViewBag.Title = "My Profile";
+    ViewBag.TopbarLabel = "Account settings";
+    ViewBag.ActivePage = "profile";
+    ViewBag.UserFullName = fullName;
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    string initials = "";
+    if (!string.IsNullOrWhiteSpace(Model.FirstName)) { initials += Model.FirstName.Substring(0, 1).ToUpper(); }
+    if (!string.IsNullOrWhiteSpace(Model.LastName)) { initials += Model.LastName.Substring(0, 1).ToUpper(); }
+
+    // Red outline on fields that failed server-side validation
+    Func<string, string> inv = name =>
+        ViewData.ModelState.ContainsKey(name) && ViewData.ModelState[name].Errors.Count > 0
+            ? " is-invalid" : "";
+
+    bool isBusiness = Model.AccountType == "Business";
+}
+
+@* ======================= PAGE HEADING ======================= *@
+<div class="ch-page-heading">
+    <h2>My Profile</h2>
+    <p>Manage your personal information and CloudHub preferences.</p>
+</div>
+
+@if (TempData["ProfileSuccess"] != null)
+{
+    <div class="alert ch-alert ch-alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-circle-check"></i>
+        <span>@TempData["ProfileSuccess"]</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@* ======================= PROFILE HERO ======================= *@
+<section class="ch-panel ch-profile-hero">
+    <div class="ch-profile-banner"></div>
+
+    <div class="ch-profile-hero-body">
+        <div class="ch-profile-avatar" aria-hidden="true">@initials</div>
+
+        <div class="ch-profile-hero-info">
+            <h3>@fullName</h3>
+            <p>@Model.EmailAddress</p>
+            <div class="ch-chips">
+                <span class="ch-chip ch-chip-blue"><i class="fas fa-user-tag"></i> @Model.AccountType account</span>
+                @if (Model.IsEmailVerified)
+                {
+                    <span class="ch-chip ch-chip-green"><i class="fas fa-circle-check"></i> Email verified</span>
+                }
+                else
+                {
+                    <span class="ch-chip ch-chip-amber"><i class="fas fa-triangle-exclamation"></i> Email not verified</span>
+                }
+                @if (Model.IsActive)
+                {
+                    <span class="ch-chip ch-chip-green"><i class="fas fa-circle"></i> Active</span>
+                }
+                else
+                {
+                    <span class="ch-chip ch-chip-red"><i class="fas fa-circle"></i> Inactive</span>
+                }
+            </div>
+        </div>
+
+        <div class="ch-profile-hero-meta">
+            <span>Member since</span>
+            <strong>@Model.CreatedAt.ToString("dd MMMM yyyy")</strong>
+        </div>
+    </div>
+</section>
+
+<div class="row g-4">
+
+    @* ======================= LEFT: EDITABLE FORM ======================= *@
+    <div class="col-xl-8">
+
+        <form method="post" action="@Url.Action("Profile", "CustomerDashboard")" id="profileForm" novalidate
+              data-has-errors="@(ViewData.ModelState.IsValid ? "false" : "true")">
+
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert ch-alert ch-alert-danger" role="alert">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <div>
+                        <strong>Please fix the following before saving:</strong>
+                        <ul>
+                            @foreach (var state in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in state.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @* ---------- Personal information ---------- *@
+            <section class="ch-panel ch-form-section">
+                <div class="ch-section-head">
+                    <span class="ch-section-icon"><i class="fas fa-user"></i></span>
+                    <div>
+                        <h4>Personal information</h4>
+                        <p>Update your basic personal details.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.FirstName, "First name", new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" + inv("FirstName"), placeholder = "Enter your first name", autocomplete = "given-name" })
+                        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "ch-field-error" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.LastName, "Last name", new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" + inv("LastName"), placeholder = "Enter your last name", autocomplete = "family-name" })
+                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "ch-field-error" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.EmailAddress, "Email address", new { @class = "form-label" })
+                        <div class="ch-locked">
+                            @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", @readonly = "readonly" })
+                            <i class="fas fa-lock" title="This field is locked"></i>
+                        </div>
+                        <div class="ch-help">Your registered email address cannot be changed here.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.PhoneNumber, "Phone number", new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" + inv("PhoneNumber"), type = "tel", placeholder = "082 123 4567", autocomplete = "tel" })
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "ch-field-error" })
+                    </div>
+                </div>
+            </section>
+
+            @* ---------- Organisation information (business accounts only) ---------- *@
+            @if (isBusiness)
+            {
+                <section class="ch-panel ch-form-section">
+                    <div class="ch-section-head">
+                        <span class="ch-section-icon"><i class="fas fa-building"></i></span>
+                        <div>
+                            <h4>Organisation information</h4>
+                            <p>Manage your business account details.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.OrganisationName, "Organisation name", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.OrganisationName, new { @class = "form-control" + inv("OrganisationName"), placeholder = "Enter organisation name", autocomplete = "organization" })
+                            @Html.ValidationMessageFor(m => m.OrganisationName, "", new { @class = "ch-field-error" })
+                        </div>
+                    </div>
+                </section>
+            }
+
+            @* ---------- Hosting preferences ---------- *@
+            <section class="ch-panel ch-form-section">
+                <div class="ch-section-head">
+                    <span class="ch-section-icon"><i class="fas fa-sliders"></i></span>
+                    <div>
+                        <h4>Hosting preferences</h4>
+                        <p>Tell us how you intend to use CloudHub.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.PrimaryUse, "Primary use", new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.PrimaryUse,
+                                 new SelectList(new[] { "Web Hosting", "Application Hosting", "Database Hosting", "Development and Testing", "Learning and Education", "Other" }, Model.PrimaryUse),
+                                 "Select primary use", new { @class = "form-select" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.PreferredTechnology, "Preferred technology", new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.PreferredTechnology,
+                                 new SelectList(new[] { "ASP.NET / .NET", "PHP", "Java", "Python", "Node.js", "Other" }, Model.PreferredTechnology),
+                                 "Select preferred technology", new { @class = "form-select" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.PreferredDeploymentMethod, "Preferred deployment method", new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.PreferredDeploymentMethod,
+                                 new SelectList(new[] { "GitHub Integration", "ZIP Upload", "Visual Studio Publishing", "CI/CD Pipeline", "Not Sure Yet" }, Model.PreferredDeploymentMethod),
+                                 "Select deployment method", new { @class = "form-select" })
+                    </div>
+                </div>
+            </section>
+
+            @* ---------- Sticky save bar ---------- *@
+            <div class="ch-savebar">
+                <span class="ch-savebar-status" id="saveStatus" aria-live="polite">
+                    <i class="fas fa-circle-check"></i> All changes saved
+                </span>
+                <div class="ch-savebar-actions">
+                    <a href="@Url.Action("Index", "CustomerDashboard")" class="ch-btn ch-btn-light">Cancel</a>
+                    <button type="button" class="ch-btn ch-btn-light" id="discardBtn" hidden>Discard changes</button>
+                    <button type="submit" class="ch-btn ch-btn-primary" id="saveBtn" disabled>
+                        <i class="fas fa-floppy-disk"></i> Save changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @* ======================= RIGHT: READ-ONLY CARDS ======================= *@
+    <div class="col-xl-4">
+
+        <section class="ch-panel ch-side-card">
+            <h4><i class="fas fa-id-card"></i> Account details</h4>
+            <dl class="ch-details">
+                <dt>Account type</dt>
+                <dd>@Model.AccountType</dd>
+
+                <dt>Account status</dt>
+                <dd>
+                    @if (Model.IsActive)
+                    {
+                        <span class="ch-chip ch-chip-green">Active</span>
+                    }
+                    else
+                    {
+                        <span class="ch-chip ch-chip-red">Inactive</span>
+                    }
+                </dd>
+
+                <dt>Registered</dt>
+                <dd>@Model.CreatedAt.ToString("dd MMMM yyyy")</dd>
+
+                <dt>Email verification</dt>
+                <dd>
+                    @if (Model.IsEmailVerified)
+                    {
+                        <span class="ch-chip ch-chip-green">Verified</span>
+                    }
+                    else
+                    {
+                        <span class="ch-chip ch-chip-amber">Not verified</span>
+                    }
+                </dd>
+            </dl>
+        </section>
+
+        <section class="ch-panel ch-side-card">
+            <h4><i class="fas fa-shield-halved"></i> Security</h4>
+            <p class="ch-side-text">Keep your account safe with a strong, unique password.</p>
+            <button type="button" class="ch-btn ch-btn-outline ch-btn-block" disabled>
+                <i class="fas fa-key"></i> Change password <small class="ch-soon">Soon</small>
+            </button>
+        </section>
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('profileForm');
+            var saveBtn = document.getElementById('saveBtn');
+            var discardBtn = document.getElementById('discardBtn');
+            var status = document.getElementById('saveStatus');
+            var submitting = false;
+
+            // Snapshot of every editable field, used to detect unsaved changes
+            function snapshot() {
+                return Array.prototype.slice.call(form.elements)
+                    .filter(function (el) {
+                        return el.name && !el.readOnly && el.type !== 'submit' && el.type !== 'button' &&
+                            el.name !== '__RequestVerificationToken';
+                    })
+                    .map(function (el) { return el.name + '=' + el.value; })
+                    .join('&');
+            }
+
+            var initial = snapshot();
+            var forceDirty = form.getAttribute('data-has-errors') === 'true';
+
+            function refresh() {
+                var dirty = forceDirty || snapshot() !== initial;
+                saveBtn.disabled = !dirty;
+                discardBtn.hidden = !dirty;
+                status.className = 'ch-savebar-status' + (dirty ? ' dirty' : '');
+                status.innerHTML = dirty
+                    ? '<i class="fas fa-circle-exclamation"></i> You have unsaved changes'
+                    : '<i class="fas fa-circle-check"></i> All changes saved';
+            }
+
+            form.addEventListener('input', function () { forceDirty = false; refresh(); });
+            form.addEventListener('change', function () { forceDirty = false; refresh(); });
+
+            discardBtn.addEventListener('click', function () {
+                form.reset();
+                forceDirty = false;
+                document.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); });
+                refresh();
+            });
+
+            form.addEventListener('submit', function () {
+                submitting = true;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                if (!submitting && (forceDirty || snapshot() !== initial)) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            window.addEventListener('pageshow', function () { submitting = false; });
+
+            refresh();
+        })();
+    </script>
+}
