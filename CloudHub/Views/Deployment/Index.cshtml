@@ -3,8 +3,10 @@
 @using System.Linq
 
 @{
-    ViewBag.Title = "Deploy Application";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Deployments";
+    ViewBag.TopbarLabel = "Deployments";
+    ViewBag.ActivePage = "deployments"; // lowercase, must match the layout
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     bool hasProjects = Model.Projects != null
                        && Model.Projects.Any();

@@ -9,234 +9,95 @@
     ViewBag.TopbarLabel = "Overview";
     ViewBag.ActivePage = "dashboard"; // must match activeClass("dashboard") in _DashboardLayout
     ViewBag.UserFullName = fullName;
+
+    // ---- Storage (properties that exist on the view model) ----
+    bool hasPercentage = Model != null && Model.StoragePercentage.HasValue;
+    double percentage = hasPercentage
+        ? Math.Max(0, Math.Min(100, Convert.ToDouble(Model.StoragePercentage.Value)))
+        : 0;
+    string usage = percentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "%";
+
+    bool hasStorage = Model != null && Model.StorageUsedGB.HasValue;
+    string storage = hasStorage
+        ? Convert.ToDouble(Model.StorageUsedGB.Value).ToString("0.##") + " GB"
+        : "—";
+
+    // ---- Summary values (nullable until the project/deployment modules fill them) ----
+    string projects = (Model != null && Model.TotalProjects.HasValue) ? Model.TotalProjects.Value.ToString() : "—";
+    string deployments = (Model != null && Model.TotalDeployments.HasValue) ? Model.TotalDeployments.Value.ToString() : "—";
+    string plan = (Model == null || string.IsNullOrWhiteSpace(Model.CurrentPlan)) ? "No plan" : Model.CurrentPlan;
 }
 
-@section styles {
-    <link href="@Url.Content("~/Content/customer-dashboard.css")" rel="stylesheet" />
-}
+<div class="ch-page-heading">
+    <h2>@(string.IsNullOrEmpty(firstName) ? "Dashboard" : "Welcome back, " + firstName)</h2>
+    <p>Here is an overview of your CloudHub account.</p>
+</div>
 
-<div class="ch-dashboard">
-
-    <!-- LEFT SIDEBAR -->
-    <aside class="ch-sidebar">
-
-        <div class="ch-sidebar-brand">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <span>CloudHub</span>
-        </div>
-
-        <nav class="ch-sidebar-nav">
-
-            <a class="ch-nav-link active"
-               href="@Url.Action("Index", "CustomerDashboard")">
-                <i class="fas fa-house"></i>
-                Dashboard
-            </a>
-
-            <span class="ch-nav-link ch-nav-disabled">
-                <i class="fas fa-folder"></i>
-                My Projects
-                <small>Soon</small>
-            </span>
-
-            <span class="ch-nav-link ch-nav-disabled">
-                <i class="fas fa-rocket"></i>
-                Deployments
-                <small>Soon</small>
-            </span>
-
-            <span class="ch-nav-link ch-nav-disabled">
-                <i class="fas fa-database"></i>
-                Databases
-                <small>Soon</small>
-            </span>
-
-            <span class="ch-nav-link ch-nav-disabled">
-                <i class="fas fa-credit-card"></i>
-                Billing
-                <small>Soon</small>
-            </span>
-
-            <span class="ch-nav-link ch-nav-disabled">
-                <i class="fas fa-circle-question"></i>
-                Support
-                <small>Soon</small>
-            </span>
-
-            <a class="ch-nav-link"
-               href="@Url.Action("Profile", "CustomerDashboard")">
-                <i class="fas fa-gear"></i>
-                Settings
-            </a>
-
-        </nav>
-
-        <div class="ch-sidebar-bottom">
-            @using (Html.BeginForm(
-                "Logout",
-                "CustomerAccount",
-                FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-
-                <button type="submit" class="ch-logout">
-                    <i class="fas fa-right-from-bracket"></i>
-                    Logout
-                </button>
-            }
-        </div>
-    </aside>
-
-    <!-- MAIN AREA -->
-    <div class="ch-main">
-
-        <!-- TOP BAR -->
-        <header class="ch-topbar">
-
-            <button class="ch-mobile-menu"
-                    type="button"
-                    id="chMenuToggle"
-                    aria-label="Toggle dashboard menu"
-                    aria-expanded="false">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <div class="ch-topbar-right">
-
-                <span class="ch-notification-icon"
-                      title="Notifications coming soon">
-                    <i class="far fa-bell"></i>
-                </span>
-
-                <div class="dropdown">
-
-                    <button class="ch-account-button dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false">
-
-                        <span class="ch-avatar">
-                            @initials
-                        </span>
-
-                        <span>@customerName</span>
-
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end">
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="@Url.Action("Profile", "CustomerDashboard")">
-                                My Profile
-                            </a>
-                        </li>
-
-                        <li><hr class="dropdown-divider" /></li>
-
-                        <li>
-                            @using (Html.BeginForm(
-                                "Logout",
-                                "CustomerAccount",
-                                FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-
-                                <button type="submit"
-                                        class="dropdown-item text-danger">
-                                    Logout
-                                </button>
-                            }
-                        </li>
-
-                    </ul>
-                </div>
-
-            </div>
-        </header>
-
-        <!-- DASHBOARD CONTENT -->
-        <main class="ch-content">
-
-            <div class="ch-page-heading">
-                <h1>Dashboard</h1>
-                <p>Overview of your CloudHub account</p>
-            </div>
-
-<!-- Summary cards. Replace the dashes with real values when those modules exist. -->
+<!-- Summary cards -->
 <div class="ch-stats-grid">
     <div class="ch-stat-card">
         <div class="ch-stat-icon"><i class="fas fa-folder"></i></div>
         <span>Projects</span>
-        <h2>&mdash;</h2>
+        <h2>@projects</h2>
     </div>
 
     <div class="ch-stat-card">
         <div class="ch-stat-icon"><i class="fas fa-rocket"></i></div>
         <span>Deployments</span>
-        <h2>&mdash;</h2>
+        <h2>@deployments</h2>
     </div>
 
     <div class="ch-stat-card">
         <div class="ch-stat-icon"><i class="fas fa-database"></i></div>
         <span>Storage used</span>
-        <h2>&mdash;</h2>
+        <h2>@storage</h2>
     </div>
 
     <div class="ch-stat-card">
         <div class="ch-stat-icon"><i class="fas fa-credit-card"></i></div>
         <span>Current plan</span>
-        <h2>No plan</h2>
+        <h2>@plan</h2>
     </div>
 </div>
 
 <div class="ch-panels-grid">
 
-    <!-- Getting started: more useful than an empty activity list on a new account -->
+    <!-- Recent activity -->
     <section class="ch-panel">
         <div class="ch-panel-heading">
-            <h3>Getting started</h3>
-            <span class="ch-muted-link">1 of 4 done</span>
+            <h3>Recent activity</h3>
+            <a class="ch-muted-link" href="@Url.Action("Index", "Deployment")">View all</a>
         </div>
 
-        <div class="ch-activity-list">
-            <div class="ch-activity-item">
-                <span class="ch-activity-dot"></span>
-                <div style="flex:1">
-                    <strong>Create your account</strong>
-                    <small>You're signed in and ready to go.</small>
-                </div>
-                <span class="ch-chip ch-chip-green"><i class="fas fa-check"></i> Done</span>
+        @if (Model == null || Model.RecentActivities == null || Model.RecentActivities.Count == 0)
+        {
+            <div class="ch-empty-state">
+                <i class="fas fa-clock-rotate-left"></i>
+                <h4>No recent activity</h4>
+                <p>
+                    Your deployments and project activity will appear here.
+                </p>
+                <a class="ch-btn ch-btn-primary" style="margin-top:16px"
+                   href="@Url.Action("Index", "Deployment")">
+                    <i class="fas fa-rocket"></i> Go to deployments
+                </a>
             </div>
-
-            <div class="ch-activity-item">
-                <span class="ch-activity-dot"></span>
-                <div style="flex:1">
-                    <strong>Choose a hosting plan</strong>
-                    <small>Pick the plan that fits your project.</small>
-                </div>
-                <span class="ch-soon">Soon</span>
+        }
+        else
+        {
+            <div class="ch-activity-list">
+                @foreach (var activity in Model.RecentActivities)
+                {
+                    <div class="ch-activity-item">
+                        <span class="ch-activity-dot"></span>
+                        <div>
+                            <strong>@activity.Description</strong>
+                            <small>@activity.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        </div>
+                    </div>
+                }
             </div>
-
-            <div class="ch-activity-item">
-                <span class="ch-activity-dot"></span>
-                <div style="flex:1">
-                    <strong>Create your first project</strong>
-                    <small>Name it and choose a framework.</small>
-                </div>
-                <span class="ch-soon">Soon</span>
-            </div>
-
-            <div class="ch-activity-item">
-                <span class="ch-activity-dot"></span>
-                <div style="flex:1">
-                    <strong>Deploy your application</strong>
-                    <small>Connect GitHub or upload a ZIP file.</small>
-                </div>
-                <span class="ch-soon">Soon</span>
-            </div>
-        </div>
+        }
     </section>
 
     <!-- Resource usage -->
@@ -246,12 +107,29 @@
         </div>
 
         <div class="ch-resource-content">
-            <div class="ch-usage-ring" style="--usage: 0%;">
+            <div class="ch-usage-ring" style="--usage: @usage">
                 <div class="ch-usage-inner">
-                    <strong>0%</strong>
+                    @if (hasPercentage)
+                    {
+                        <strong>@percentage.ToString("0")%</strong>
+                    }
+                    else
+                    {
+                        <strong>&mdash;</strong>
+                    }
                 </div>
             </div>
-            <p class="ch-resource-caption">Storage data is not available yet.</p>
+
+            <p class="ch-resource-caption">
+                @if (Model != null && Model.StorageUsedGB.HasValue && Model.StorageLimitGB.HasValue)
+                {
+                    <text>@Convert.ToDouble(Model.StorageUsedGB.Value).ToString("0.##") GB of @Convert.ToDouble(Model.StorageLimitGB.Value).ToString("0.##") GB</text>
+                }
+                else
+                {
+                    <text>Storage data not available yet.</text>
+                }
+            </p>
         </div>
     </section>
 

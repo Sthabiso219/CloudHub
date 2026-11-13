@@ -3326,3 +3326,239 @@ section[id] {
             font-size: 16px;
         }
 }
+/* ===== Deployments page (monochrome) — append to the end of Content/cloudhub.css ===== */
+.deploy-page {
+    max-width: 860px;
+}
+
+.deploy-container {
+    display: block;
+}
+
+.deploy-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ch-muted, #60666d);
+    text-decoration: none;
+}
+
+    .deploy-back:hover {
+        color: var(--ch-ink, #15181b);
+    }
+
+.deploy-card {
+    background: #fff;
+    border: 1px solid var(--ch-line, #e4e7ea);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px -16px rgba(0,0,0,.15);
+}
+
+.deploy-header h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+    color: var(--ch-ink, #15181b);
+}
+
+.deploy-header p {
+    margin: 0 0 22px;
+    font-size: 14px;
+    color: var(--ch-muted, #60666d);
+}
+
+.deploy-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    margin-bottom: 22px;
+    background: #eceef1;
+    border-radius: 12px;
+}
+
+.deploy-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ch-muted, #60666d);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+    .deploy-tab:hover {
+        color: var(--ch-ink, #15181b);
+    }
+
+    .deploy-tab.active {
+        background: #fff;
+        color: var(--ch-ink, #15181b);
+        box-shadow: 0 1px 3px rgba(0,0,0,.12);
+    }
+
+.deploy-field {
+    margin-bottom: 18px;
+}
+
+    .deploy-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 650;
+        color: var(--ch-ink, #15181b);
+    }
+
+.deploy-control {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ch-ink, #15181b);
+    background: #fff;
+    border: 1px solid #d3d7db;
+    border-radius: 10px;
+}
+
+    .deploy-control:focus {
+        outline: none;
+        border-color: #1c1f23;
+        box-shadow: 0 0 0 3px rgba(28,31,35,.12);
+    }
+
+    .deploy-control:disabled {
+        background: #f5f6f8;
+        color: #8a9097;
+        cursor: not-allowed;
+    }
+
+.deploy-panel {
+    padding: 20px;
+    margin-bottom: 18px;
+    background: #f5f6f8;
+    border: 1px solid var(--ch-line, #e4e7ea);
+    border-radius: 12px;
+}
+
+    .deploy-panel[hidden] {
+        display: none;
+    }
+
+.deploy-panel-heading {
+    margin-bottom: 16px;
+}
+
+    .deploy-panel-heading > i {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        background: #eceef1;
+        color: #1c1f23;
+        font-size: 17px;
+    }
+
+    .deploy-panel-heading h2 {
+        margin: 0 0 2px;
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .deploy-panel-heading p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--ch-muted, #60666d);
+    }
+
+.deploy-info {
+    margin-bottom: 16px;
+}
+
+    .deploy-info h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .deploy-info ol {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 13px;
+        line-height: 1.8;
+        color: var(--ch-muted, #60666d);
+    }
+
+.deploy-note {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--ch-muted, #60666d);
+}
+
+.deploy-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 6px;
+}
+
+.deploy-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: 1px solid #1c1f23;
+    border-radius: 10px;
+    background: #1c1f23;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .deploy-button:hover:not(:disabled) {
+        background: #000;
+        color: #fff;
+    }
+
+    .deploy-button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+.deploy-button-outline {
+    background: #fff;
+    color: #1c1f23;
+    border-color: #d3d7db;
+}
+
+    .deploy-button-outline:hover {
+        background: #eceef1 !important;
+        color: #1c1f23 !important;
+    }
+
+@media (max-width: 575px) {
+    .deploy-card {
+        padding: 18px;
+    }
+
+    .deploy-tabs {
+        flex-direction: column;
+    }
+
+    .deploy-actions {
+        flex-direction: column-reverse;
+    }
+}

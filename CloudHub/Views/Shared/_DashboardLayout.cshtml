@@ -133,14 +133,11 @@
 
                     </a>
 
-                    <a href="#"
-                       class="ch-nav-link ch-nav-disabled"
-                       tabindex="-1"
-                       aria-disabled="true">
+                    <a href="@Url.Action("Index", "Deployment")"
+                       class="ch-nav-link @activeClass("deployments")">
 
                         <i class="fas fa-rocket"></i>
                         <span>Deployments</span>
-                        <small>Soon</small>
 
                     </a>
 
@@ -207,15 +204,15 @@
                     FormMethod.Post,
                     new { @class = "m-0" }))
                 {
-                    @Html.AntiForgeryToken()
+                @Html.AntiForgeryToken()
 
-                    <button type="submit"
-                            class="ch-nav-link ch-logout-btn">
+                <button type="submit"
+                        class="ch-nav-link ch-logout-btn">
 
-                        <i class="fas fa-right-from-bracket"></i>
-                        <span>Logout</span>
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Logout</span>
 
-                    </button>
+                </button>
                 }
 
             </div>
@@ -294,7 +291,7 @@
                             @if (!string.IsNullOrWhiteSpace(email) &&
                                  fullName != email)
                             {
-                                <small>@email</small>
+                            <small>@email</small>
                             }
 
                         </span>
@@ -331,15 +328,15 @@
                                 FormMethod.Post,
                                 new { @class = "m-0" }))
                             {
-                                @Html.AntiForgeryToken()
+                            @Html.AntiForgeryToken()
 
-                                <button type="submit"
-                                        class="dropdown-item text-danger">
+                            <button type="submit"
+                                    class="dropdown-item text-danger">
 
-                                    <i class="fas fa-right-from-bracket me-2"></i>
-                                    Logout
+                                <i class="fas fa-right-from-bracket me-2"></i>
+                                Logout
 
-                                </button>
+                            </button>
                             }
 
                         </li>
