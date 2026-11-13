@@ -1,0 +1,516 @@
+﻿
+@model CloudHub.Models.ViewModels.DeploymentPageViewModel
+@using System.Linq
+
+@{
+    ViewBag.Title = "Deploy Application";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    bool hasProjects = Model.Projects != null
+                       && Model.Projects.Any();
+
+    string successMessage =
+        TempData["DeploymentSuccess"] as string;
+
+    string errorMessage =
+        TempData["DeploymentError"] as string;
+}
+
+<div class="deploy-page">
+    <div class="deploy-container">
+
+        <!-- BACK TO DASHBOARD -->
+        <a href="@Url.Action("Index", "CustomerDashboard")"
+           class="deploy-back">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <div class="deploy-workspace">
+
+            <!-- MAIN HEADER -->
+            <div class="deploy-workspace-header">
+                <h1>CloudHub Deployments</h1>
+                <p>Manage your hosted applications</p>
+            </div>
+
+            <!-- PAGE NAVIGATION -->
+            <nav class="deploy-workspace-tabs"
+                 aria-label="Deployment navigation">
+
+                <a href="@Url.Action("Index", "Deployment")"
+                   class="deploy-workspace-tab">
+                    Hosted Applications
+                </a>
+
+                <a href="@Url.Action("Create", "Deployment")"
+                   class="deploy-workspace-tab active"
+                   aria-current="page">
+                    Deploy Application
+                </a>
+            </nav>
+
+            <!-- NOTIFICATIONS -->
+            @if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                <div class="deploy-alert deploy-alert-success"
+                     role="status">
+                    <i class="fas fa-check-circle"></i>
+                    @successMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="deploy-alert deploy-alert-error"
+                     role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    @errorMessage
+                </div>
+            }
+
+            <!-- DEPLOYMENT CARD -->
+            <div class="deploy-card">
+
+                <div class="deploy-section-heading">
+                    <h2>Deploy Application</h2>
+                    <p>Choose a deployment method</p>
+                </div>
+
+                <!-- METHOD TABS -->
+                <div class="deploy-tabs"
+                     role="tablist"
+                     aria-label="Deployment method">
+
+                    <button type="button"
+                            class="deploy-tab active"
+                            data-deploy-tab="github"
+                            aria-controls="githubPanel"
+                            aria-selected="true"
+                            role="tab">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </button>
+
+                    <button type="button"
+                            class="deploy-tab"
+                            data-deploy-tab="visualstudio"
+                            aria-controls="visualstudioPanel"
+                            aria-selected="false"
+                            role="tab">
+                        <i class="fas fa-code"></i>
+                        Visual Studio
+                    </button>
+
+                    <button type="button"
+                            class="deploy-tab"
+                            data-deploy-tab="zip"
+                            aria-controls="zipPanel"
+                            aria-selected="false"
+                            role="tab">
+                        <i class="fas fa-file-archive"></i>
+                        Upload ZIP
+                    </button>
+
+                </div>
+
+                <!-- GITHUB PANEL -->
+                <section id="githubPanel"
+                         class="deploy-panel"
+                         data-deploy-panel="github"
+                         role="tabpanel">
+
+                    <div class="deploy-panel-heading">
+                        <i class="fab fa-github"></i>
+
+                        <h2>GitHub Deployment</h2>
+
+                        <p>
+                            Deploy directly from your
+                            GitHub repository.
+                        </p>
+                    </div>
+
+                    <div class="deploy-field">
+                        <label for="githubProjectId">
+                            Select Project
+                        </label>
+
+                        @Html.DropDownList(
+                                 "GithubProjectId",
+                                 Model.Projects,
+                                 "-- Select a project --",
+                                 new
+                                 {
+                                     id = "githubProjectId",
+                                     @class = "deploy-control"
+                                 })
+                    </div>
+
+                    <div class="deploy-field">
+                        <label for="repositorySelect">
+                            Select Repository
+                        </label>
+
+                        <select id="repositorySelect"
+                                class="deploy-control"
+                                disabled>
+                            <option>
+                                Connect GitHub to view repositories
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="deploy-field">
+                        <label for="branchSelect">
+                            Select Branch
+                        </label>
+
+                        <select id="branchSelect"
+                                class="deploy-control"
+                                disabled>
+                            <option>
+                                Select a repository first
+                            </option>
+                        </select>
+                    </div>
+
+                    <p class="deploy-note">
+                        GitHub integration is not yet configured.
+                        Repository selection and deployment
+                        will become available after connecting GitHub.
+                    </p>
+
+                    <div class="deploy-actions">
+                        <a href="@Url.Action("Index", "Deployment")"
+                           class="deploy-button deploy-button-outline">
+                            Cancel
+                        </a>
+
+                        <button type="button"
+                                class="deploy-button"
+                                disabled>
+                            Start Deployment
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- VISUAL STUDIO PANEL -->
+                <section id="visualstudioPanel"
+                         class="deploy-panel"
+                         data-deploy-panel="visualstudio"
+                         role="tabpanel"
+                         hidden>
+
+                    <div class="deploy-panel-heading">
+                        <i class="fas fa-code"></i>
+
+                        <h2>Visual Studio Deployment</h2>
+
+                        <p>
+                            Publish your application directly
+                            from Visual Studio.
+                        </p>
+                    </div>
+
+                    <div class="deploy-field">
+                        <label for="visualStudioProjectId">
+                            Select Project
+                        </label>
+
+                        @Html.DropDownList(
+                                 "VisualStudioProjectId",
+                                 Model.Projects,
+                                 "-- Select a project --",
+                                 new
+                                 {
+                                     id = "visualStudioProjectId",
+                                     @class = "deploy-control"
+                                 })
+                    </div>
+
+                    <div class="deploy-info">
+                        <h3>How it works</h3>
+
+                        <ol>
+                            <li>Select your CloudHub project.</li>
+                            <li>Download the publishing profile.</li>
+                            <li>Open your project in Visual Studio.</li>
+                            <li>Choose Publish and import the profile.</li>
+                            <li>Publish your application securely.</li>
+                        </ol>
+                    </div>
+
+                    <button type="button"
+                            class="deploy-button"
+                            disabled>
+                        <i class="fas fa-download"></i>
+                        Download Publish Profile
+                    </button>
+
+                    <p class="deploy-note">
+                        Publishing profiles will become available
+                        after the CloudHub publishing service
+                        is configured.
+                    </p>
+
+                </section>
+
+                <!-- ZIP DEPLOYMENT PANEL -->
+                <section id="zipPanel"
+                         class="deploy-panel"
+                         data-deploy-panel="zip"
+                         role="tabpanel"
+                         hidden>
+
+                    <div class="deploy-panel-heading">
+                        <i class="fas fa-file-archive"></i>
+
+                        <h2>Upload ZIP</h2>
+
+                        <p>
+                            Upload your application package
+                            for deployment.
+                        </p>
+                    </div>
+
+                    @using (Html.BeginForm(
+                        "UploadZip",
+                        "Deployment",
+                        FormMethod.Post,
+                        new
+                        {
+                            enctype = "multipart/form-data",
+                            id = "zipDeploymentForm"
+                        }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <!-- SELECT PROJECT -->
+                        <div class="deploy-field">
+
+                            <label for="zipProjectId">
+                                Select Project
+                            </label>
+
+                            @Html.DropDownListFor(
+                                     m => m.ProjectId,
+                                     Model.Projects,
+                                     "-- Select a project --",
+                                     new
+                                     {
+                                         id = "zipProjectId",
+                                         @class = "deploy-control",
+                                         required = "required"
+                                     })
+
+                            @Html.ValidationMessageFor(
+                                     m => m.ProjectId,
+                                     "",
+                                     new { @class = "text-danger" })
+
+                            @if (!hasProjects)
+                            {
+                                <p class="deploy-note">
+                                    You don't have any projects yet.
+                                    Please create a project first.
+                                </p>
+                            }
+
+                        </div>
+
+                        <!-- ZIP FILE -->
+                        <div class="deploy-field">
+
+                            <label for="ZipFile">
+                                Select ZIP File
+                            </label>
+
+                            <input type="file"
+                                   id="ZipFile"
+                                   name="ZipFile"
+                                   accept=".zip"
+                                   class="deploy-control"
+                                   required
+                                   disabled="@(!hasProjects)" />
+
+                            <p class="deploy-note">
+                                Maximum file size: 500 MB.
+                                Only ZIP packages are accepted.
+                            </p>
+
+                            <p id="selectedFileName"
+                               class="deploy-note"
+                               aria-live="polite">
+                                No file selected.
+                            </p>
+
+                        </div>
+
+                        <!-- FORM ACTIONS -->
+                        <div class="deploy-actions">
+
+                            <a href="@Url.Action("Index", "Deployment")"
+                               class="deploy-button deploy-button-outline">
+                                Cancel
+                            </a>
+
+                            <button type="submit"
+                                    id="uploadZipButton"
+                                    class="deploy-button"
+                                    disabled>
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Upload ZIP
+                            </button>
+
+                        </div>
+                    }
+
+                </section>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT: KEEP INSIDE THIS VIEW -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        "use strict";
+
+        const tabs =
+            document.querySelectorAll("[data-deploy-tab]");
+
+        const panels =
+            document.querySelectorAll("[data-deploy-panel]");
+
+        const zipForm =
+            document.getElementById("zipDeploymentForm");
+
+        const projectSelect =
+            document.getElementById("zipProjectId");
+
+        const zipFile =
+            document.getElementById("ZipFile");
+
+        const uploadButton =
+            document.getElementById("uploadZipButton");
+
+        const selectedFileName =
+            document.getElementById("selectedFileName");
+
+        const maxFileSize = 500 * 1024 * 1024;
+
+        // SWITCH DEPLOYMENT METHOD
+        tabs.forEach(function (tab) {
+
+            tab.addEventListener("click", function () {
+
+                const selectedMethod =
+                    tab.dataset.deployTab;
+
+                tabs.forEach(function (item) {
+
+                    const isActive =
+                        item.dataset.deployTab === selectedMethod;
+
+                    item.classList.toggle("active", isActive);
+
+                    item.setAttribute(
+                        "aria-selected",
+                        String(isActive)
+                    );
+                });
+
+                panels.forEach(function (panel) {
+
+                    panel.hidden =
+                        panel.dataset.deployPanel !== selectedMethod;
+
+                });
+
+            });
+
+        });
+
+        // VALIDATE ZIP FORM
+        function validateZipForm() {
+
+            if (!projectSelect ||
+                !zipFile ||
+                !uploadButton) {
+                return;
+            }
+
+            const projectSelected =
+                projectSelect.value !== "";
+
+            const file =
+                zipFile.files.length > 0
+                    ? zipFile.files[0]
+                    : null;
+
+            const validFile =
+                file !== null &&
+                file.name.toLowerCase().endsWith(".zip") &&
+                file.size > 0 &&
+                file.size <= maxFileSize;
+
+            uploadButton.disabled =
+                !(projectSelected && validFile);
+
+            if (selectedFileName) {
+
+                if (!file) {
+                    selectedFileName.textContent =
+                        "No file selected.";
+                }
+                else if (!validFile) {
+                    selectedFileName.textContent =
+                        "Invalid ZIP file or file exceeds 500 MB.";
+                }
+                else {
+                    selectedFileName.textContent =
+                        "Selected: " + file.name;
+                }
+            }
+        }
+
+        if (projectSelect) {
+            projectSelect.addEventListener(
+                "change",
+                validateZipForm
+            );
+        }
+
+        if (zipFile) {
+            zipFile.addEventListener(
+                "change",
+                validateZipForm
+            );
+        }
+
+        // PREVENT DUPLICATE SUBMISSIONS
+        if (zipForm) {
+
+            zipForm.addEventListener("submit", function (event) {
+
+                validateZipForm();
+
+                if (!uploadButton ||
+                    uploadButton.disabled) {
+
+                    event.preventDefault();
+                    return;
+                }
+
+                uploadButton.disabled = true;
+                uploadButton.textContent = "Uploading...";
+            });
+        }
+
+        validateZipForm();
+    });
+</script>

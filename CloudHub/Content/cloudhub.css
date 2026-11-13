@@ -3561,4 +3561,233 @@ section[id] {
     .deploy-actions {
         flex-direction: column-reverse;
     }
+<<<<<<< HEAD
 }
+
+
+/* ===================================
+   CLOUDHUB HOSTED APPLICATIONS
+=================================== */
+
+.deploy-applications {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.deploy-application {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 1px solid #e4e7ea;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.deploy-application-info h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+.deploy-application-info p {
+    font-size: 14px;
+    color: #60666d;
+    margin: 6px 0;
+}
+
+.deploy-application-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.deploy-status {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #e7f5ec;
+    color: #247a46;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .deploy-application {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .deploy-application-actions {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+}
+
+
+/* ========================================
+   CLOUDHUB DEPLOYMENT WORKSPACE
+======================================== */
+
+.deploy-workspace {
+    width: 100%;
+    background: transparent;
+}
+
+.deploy-workspace-header {
+    margin-bottom: 12px;
+}
+
+    .deploy-workspace-header h1 {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #17191c;
+        margin: 0 0 3px;
+    }
+
+    .deploy-workspace-header p {
+        font-size: 13px;
+        color: #777;
+        margin: 0;
+    }
+
+/* ROUNDED TABS */
+
+.deploy-workspace-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+.deploy-workspace-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 17px;
+    border-radius: 25px;
+    color: #999;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease;
+}
+
+    .deploy-workspace-tab:hover {
+        color: #25292d;
+        background: #f5f5f5;
+        text-decoration: none;
+    }
+
+    .deploy-workspace-tab.active {
+        background: #f2f2f2;
+        color: #25292d;
+    }
+
+/* CONTENT */
+
+.deploy-workspace-content {
+    margin-top: 20px;
+}
+
+.deploy-section-heading {
+    margin: 24px 0 20px;
+}
+
+    .deploy-section-heading h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0 0 5px;
+    }
+
+    .deploy-section-heading p {
+        font-size: 13px;
+        color: #777;
+        margin: 0;
+    }
+
+/* EMPTY STATE */
+
+.deploy-empty-state {
+    padding: 48px 20px;
+    text-align: center;
+    border: 1px solid #e9eaed;
+    border-radius: 14px;
+    background: #fff;
+}
+
+    .deploy-empty-state > i {
+        font-size: 32px;
+        color: #a4a9af;
+        margin-bottom: 16px;
+    }
+
+    .deploy-empty-state h2 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .deploy-empty-state p {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .deploy-empty-state .deploy-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    .deploy-workspace-tabs {
+        gap: 2px;
+    }
+
+    .deploy-workspace-tab {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .deploy-workspace-header h1 {
+        font-size: 19px;
+    }
+}
+
+
+/* CLOUDHUB DEPLOYMENT NOTIFICATIONS */
+
+.deploy-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.deploy-alert-success {
+    background: #eaf7ef;
+    color: #216e40;
+    border: 1px solid #c7e8d2;
+}
+
+.deploy-alert-error {
+    background: #fff0f0;
+    color: #a12828;
+    border: 1px solid #f2cccc;
+}
+
+=======
+}
+>>>>>>> a8adc92595b7bae0e453da6de9a24708c9210d28

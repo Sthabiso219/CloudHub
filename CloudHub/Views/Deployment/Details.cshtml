@@ -1,0 +1,70 @@
+﻿
+@model CloudHub.Models.ViewModels.HostedApplicationViewModel
+
+@{
+    ViewBag.Title = "Manage Deployment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="deploy-page">
+    <div class="deploy-container">
+
+        <a href="@Url.Action("Index", "Deployment")"
+           class="deploy-back">
+            <i class="fas fa-arrow-left"></i>
+            Back to Hosted Applications
+        </a>
+
+        <div class="deploy-card">
+
+            <div class="deploy-header">
+                <h1>@Model.ProjectName</h1>
+                <p>Deployment Details</p>
+            </div>
+
+            <div class="deploy-info">
+                <h3>Application Information</h3>
+
+                <p>
+                    <strong>Project:</strong>
+                    @Model.ProjectName
+                </p>
+
+                <p>
+                    <strong>Framework:</strong>
+                    @Model.Framework
+                </p>
+
+                <p>
+                    <strong>Deployment Method:</strong>
+                    @Model.DeploymentMethod
+                </p>
+
+                <p>
+                    <strong>Last Deployment:</strong>
+                    @Model.CreatedAt.ToLocalTime()
+                    .ToString("dd MMM yyyy HH:mm")
+                </p>
+
+                <p>
+                    <strong>Deployment Status:</strong>
+                    @Model.Status
+                </p>
+            </div>
+
+            <div class="deploy-actions">
+                <a href="@Url.Action("Create", "Deployment")"
+                   class="deploy-button">
+                    Redeploy Application
+                </a>
+            </div>
+
+            <p class="deploy-note">
+                Start, Stop, Restart, monitoring and hosting
+                settings will become available after the
+                hosting service is connected.
+            </p>
+
+        </div>
+    </div>
+</div>
