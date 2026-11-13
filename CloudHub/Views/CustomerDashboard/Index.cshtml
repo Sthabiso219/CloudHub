@@ -11,10 +11,158 @@
     ViewBag.UserFullName = fullName;
 }
 
-<div class="ch-page-heading">
-    <h2>@(string.IsNullOrEmpty(firstName) ? "Dashboard" : "Welcome back, " + firstName)</h2>
-    <p>Here is an overview of your CloudHub account.</p>
-</div>
+@section styles {
+    <link href="@Url.Content("~/Content/customer-dashboard.css")" rel="stylesheet" />
+}
+
+<div class="ch-dashboard">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="ch-sidebar">
+
+        <div class="ch-sidebar-brand">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>CloudHub</span>
+        </div>
+
+        <nav class="ch-sidebar-nav">
+
+            <a class="ch-nav-link active"
+               href="@Url.Action("Index", "CustomerDashboard")">
+                <i class="fas fa-house"></i>
+                Dashboard
+            </a>
+
+            <span class="ch-nav-link ch-nav-disabled">
+                <i class="fas fa-folder"></i>
+                My Projects
+                <small>Soon</small>
+            </span>
+
+            <span class="ch-nav-link ch-nav-disabled">
+                <i class="fas fa-rocket"></i>
+                Deployments
+                <small>Soon</small>
+            </span>
+
+            <span class="ch-nav-link ch-nav-disabled">
+                <i class="fas fa-database"></i>
+                Databases
+                <small>Soon</small>
+            </span>
+
+            <span class="ch-nav-link ch-nav-disabled">
+                <i class="fas fa-credit-card"></i>
+                Billing
+                <small>Soon</small>
+            </span>
+
+            <span class="ch-nav-link ch-nav-disabled">
+                <i class="fas fa-circle-question"></i>
+                Support
+                <small>Soon</small>
+            </span>
+
+            <a class="ch-nav-link"
+               href="@Url.Action("Profile", "CustomerDashboard")">
+                <i class="fas fa-gear"></i>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="ch-sidebar-bottom">
+            @using (Html.BeginForm(
+                "Logout",
+                "CustomerAccount",
+                FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="ch-logout">
+                    <i class="fas fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            }
+        </div>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="ch-main">
+
+        <!-- TOP BAR -->
+        <header class="ch-topbar">
+
+            <button class="ch-mobile-menu"
+                    type="button"
+                    id="chMenuToggle"
+                    aria-label="Toggle dashboard menu"
+                    aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="ch-topbar-right">
+
+                <span class="ch-notification-icon"
+                      title="Notifications coming soon">
+                    <i class="far fa-bell"></i>
+                </span>
+
+                <div class="dropdown">
+
+                    <button class="ch-account-button dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                        <span class="ch-avatar">
+                            @initials
+                        </span>
+
+                        <span>@customerName</span>
+
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+                            <a class="dropdown-item"
+                               href="@Url.Action("Profile", "CustomerDashboard")">
+                                My Profile
+                            </a>
+                        </li>
+
+                        <li><hr class="dropdown-divider" /></li>
+
+                        <li>
+                            @using (Html.BeginForm(
+                                "Logout",
+                                "CustomerAccount",
+                                FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="dropdown-item text-danger">
+                                    Logout
+                                </button>
+                            }
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- DASHBOARD CONTENT -->
+        <main class="ch-content">
+
+            <div class="ch-page-heading">
+                <h1>Dashboard</h1>
+                <p>Overview of your CloudHub account</p>
+            </div>
 
 <!-- Summary cards. Replace the dashes with real values when those modules exist. -->
 <div class="ch-stats-grid">
