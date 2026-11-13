@@ -1,131 +1,812 @@
-﻿
+﻿@using CloudHub.Models
 @model CloudHub.Models.ViewModels.RegisterCustomerViewModel
 
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = "Create your account";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // The GET action passes a model, but fall back safely just in case.
+    var vm = Model ?? new CloudHub.Models.ViewModels.RegisterCustomerViewModel();
+    IList<HostingPlan> plans = vm.AvailablePlans ?? new List<HostingPlan>();
+
+    // Red outline for fields that failed server-side validation
+    Func<string, string> inv = name =>
+        ViewData.ModelState.ContainsKey(name) && ViewData.ModelState[name].Errors.Count > 0
+            ? " is-invalid" : "";
+
+    bool hasGeneralError = ViewData.ModelState.ContainsKey(string.Empty)
+        && ViewData.ModelState[string.Empty].Errors.Count > 0;
+
+    var accountTypes = new[]
+    {
+        new { Value = "Individual", Icon = "fa-user-gear",      Title = "Developer", Text = "Personal or freelance projects" },
+        new { Value = "Student",    Icon = "fa-graduation-cap", Title = "Student",   Text = "Coursework and portfolios" },
+        new { Value = "Business",   Icon = "fa-building",       Title = "Business",  Text = "Company or client applications" }
+    };
+
+    var deployMethods = new[]
+    {
+        new { Value = "GitHub",       Icon = "fab fa-github",          Title = "GitHub repository" },
+        new { Value = "VisualStudio", Icon = "fas fa-code",            Title = "Visual Studio" },
+        new { Value = "Zip",          Icon = "fas fa-file-zipper",     Title = "ZIP upload" },
+        new { Value = "NotSure",      Icon = "far fa-circle-question", Title = "Not decided yet" }
+    };
+
+    var uses = new[]
+    {
+        new SelectListItem { Value = "Personal",  Text = "Personal projects" },
+        new SelectListItem { Value = "Academic",  Text = "Academic or student projects" },
+        new SelectListItem { Value = "Business",  Text = "Business applications" },
+        new SelectListItem { Value = "Portfolio", Text = "Portfolio or websites" },
+        new SelectListItem { Value = "Client",    Text = "Client applications" },
+        new SelectListItem { Value = "Other",     Text = "Other" }
+    };
+
+    var techs = new[]
+    {
+        new SelectListItem { Value = "AspNetMvc5", Text = "ASP.NET MVC 5" },
+        new SelectListItem { Value = "Static",     Text = "Static website (HTML, CSS, JavaScript)" },
+        new SelectListItem { Value = "Other",      Text = "Something else" }
+    };
+
+    bool moreOpen = !string.IsNullOrEmpty(vm.PrimaryUse)
+        || !string.IsNullOrEmpty(vm.PreferredTechnology)
+        || !string.IsNullOrEmpty(vm.PreferredDeploymentMethod);
 }
 
-<section class="auth-section">
-    <div class="auth-card">
+<link href="@Url.Content("~/Content/cloudhub-register.css")" rel="stylesheet" />
 
-        <div class="auth-logo">
-            <i class="fas fa-cloud"></i>
-            <h2>CloudHub</h2>
-        </div>
+<section class="reg-section">
+    <div class="reg-shell">
 
-        <h3>Create Your Account</h3>
+        @* ======================= LEFT: WIZARD ======================= *@
+        <div class="reg-main">
 
-        <p class="auth-subtitle">
-            Join CloudHub and start deploying today.
-        </p>
+            <header class="reg-head">
+                <h1>Create your account</h1>
+                <p class="reg-sub" id="stepSub" aria-live="polite">Step 1 of 4 &middot; Your details</p>
+            </header>
 
-        @using (Html.BeginForm("Register", "CustomerAccount",
-            FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
+            <noscript>
+                <div class="alert alert-warning small">
+                    This form needs JavaScript. Please turn it on in your browser to create an account.
+                </div>
+            </noscript>
 
-            @Html.ValidationSummary(true, "",
-                     new { @class = "text-danger" })
+            <ol class="reg-stepper" id="stepper">
+                <li class="current" aria-current="step">
+                    <span class="dot"><span class="num">1</span><i class="fas fa-check"></i></span>
+                    <span class="lbl">Your details</span>
+                </li>
+                <li>
+                    <span class="dot"><span class="num">2</span><i class="fas fa-check"></i></span>
+                    <span class="lbl">Security</span>
+                </li>
+                <li>
+                    <span class="dot"><span class="num">3</span><i class="fas fa-check"></i></span>
+                    <span class="lbl">Your plan</span>
+                </li>
+                <li>
+                    <span class="dot"><span class="num">4</span><i class="fas fa-check"></i></span>
+                    <span class="lbl">Review</span>
+                </li>
+            </ol>
 
-            <div class="form-group">
-                @Html.LabelFor(m => m.FirstName)
-                @Html.TextBoxFor(m => m.FirstName,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "First Name"
-                         })
-                @Html.ValidationMessageFor(m => m.FirstName, "",
-                         new { @class = "text-danger" })
-            </div>
+            @if (hasGeneralError)
+            {
+                <div class="alert alert-danger small py-2 reg-general-error" role="alert">
+                    <i class="fas fa-circle-exclamation me-1"></i>
+                    @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+                </div>
+            }
 
-            <div class="form-group">
-                @Html.LabelFor(m => m.LastName)
-                @Html.TextBoxFor(m => m.LastName,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Last Name"
-                         })
-                @Html.ValidationMessageFor(m => m.LastName, "",
-                         new { @class = "text-danger" })
-            </div>
+            <p class="reg-step-alert" id="stepAlert" role="alert" hidden></p>
 
-            <div class="form-group">
-                @Html.LabelFor(m => m.EmailAddress)
-                @Html.TextBoxFor(m => m.EmailAddress,
-                         new
-                         {
-                             @class = "form-control",
-                             type = "email",
-                             placeholder = "Email Address"
-                         })
-                @Html.ValidationMessageFor(m => m.EmailAddress, "",
-                         new { @class = "text-danger" })
-            </div>
+            @using (Html.BeginForm("Register", "CustomerAccount", FormMethod.Post,
+                new { id = "registerForm", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
 
-            <div class="form-group">
-                @Html.LabelFor(m => m.PhoneNumber)
-                @Html.TextBoxFor(m => m.PhoneNumber,
-                         new
-                         {
-                             @class = "form-control",
-                             type = "tel",
-                             placeholder = "Phone Number"
-                         })
-                @Html.ValidationMessageFor(m => m.PhoneNumber, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Password"
-                         })
-                @Html.ValidationMessageFor(m => m.Password, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword,
-                         new
-                         {
-                             @class = "form-control",
-                             placeholder = "Confirm Password"
-                         })
-                @Html.ValidationMessageFor(m => m.ConfirmPassword, "",
-                         new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                <div class="form-check">
-                    @Html.CheckBoxFor(m => m.AcceptTerms,
-                             new { @class = "form-check-input" })
-
-                    @Html.LabelFor(m => m.AcceptTerms,
-                             new { @class = "form-check-label" })
+                @* Honeypot: hidden from people. Bots fill it in and are ignored. *@
+                <div class="reg-hp" aria-hidden="true">
+                    <label for="Website">Leave this field empty</label>
+                    <input type="text" id="Website" name="Website" tabindex="-1" autocomplete="off" />
                 </div>
 
-                @Html.ValidationMessageFor(m => m.AcceptTerms, "",
-                         new { @class = "text-danger" })
+                @* ---------------- STEP 1: YOUR DETAILS ---------------- *@
+                <div class="reg-step active" data-step="0">
+                    <h2 class="reg-step-title" tabindex="-1">Tell us about yourself</h2>
+
+                    <div class="reg-social">
+                        <button type="button" class="reg-social-btn" disabled aria-disabled="true" title="Coming soon">
+                            <i class="fab fa-github"></i> GitHub <span class="reg-soon">Soon</span>
+                        </button>
+                        <button type="button" class="reg-social-btn" disabled aria-disabled="true" title="Coming soon">
+                            <svg viewBox="0 0 48 48" aria-hidden="true">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </svg>
+                            Google <span class="reg-soon">Soon</span>
+                        </button>
+                    </div>
+                    <div class="reg-divider"><span>or continue with your email</span></div>
+
+                    <div class="reg-row">
+                        <div class="reg-field">
+                            @Html.LabelFor(m => m.FirstName, "First name")
+                            <div class="reg-input">
+                                <i class="far fa-user ai"></i>
+                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" + inv("FirstName"), placeholder = "John", autocomplete = "given-name" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "reg-error" })
+                        </div>
+                        <div class="reg-field">
+                            @Html.LabelFor(m => m.LastName, "Last name")
+                            <div class="reg-input">
+                                <i class="far fa-user ai"></i>
+                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" + inv("LastName"), placeholder = "Smith", autocomplete = "family-name" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "reg-error" })
+                        </div>
+                    </div>
+
+                    <div class="reg-field">
+                        @Html.LabelFor(m => m.EmailAddress, "Email address")
+                        <div class="reg-input">
+                            <i class="far fa-envelope ai"></i>
+                            @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control" + inv("EmailAddress"), type = "email", placeholder = "you@example.com", autocomplete = "email" })
+                        </div>
+                        <p class="reg-hint" id="emailHint" hidden>
+                            Did you mean <button type="button" class="reg-link" id="emailFix"></button>?
+                        </p>
+                        @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "reg-error" })
+                    </div>
+
+                    <div class="reg-field">
+                        @Html.LabelFor(m => m.PhoneNumber, "Phone number")
+                        <div class="reg-input">
+                            <i class="fas fa-phone ai"></i>
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" + inv("PhoneNumber"), type = "tel", placeholder = "082 123 4567", autocomplete = "tel" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "reg-error" })
+                    </div>
+                </div>
+
+                @* ---------------- STEP 2: SECURITY ---------------- *@
+                <div class="reg-step" data-step="1">
+                    <h2 class="reg-step-title" tabindex="-1">Secure your account</h2>
+                    <p class="reg-lead">Choose a strong password. We store it encrypted, never as plain text.</p>
+
+                    <div class="reg-field">
+                        @Html.LabelFor(m => m.Password, "Password")
+                        <div class="reg-input">
+                            <i class="fas fa-lock ai"></i>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control has-toggle" + inv("Password"), placeholder = "Create a password", autocomplete = "new-password" })
+                            <button type="button" class="reg-toggle" data-target="Password" aria-label="Show password"><i class="far fa-eye"></i></button>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "reg-error" })
+
+                        <div class="pw-meter" id="pwMeter" data-level="0" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                        <ul class="pw-rules" id="pwRules">
+                            <li data-rule="len"><i class="far fa-circle"></i> At least 8 characters</li>
+                            <li data-rule="case"><i class="far fa-circle"></i> Upper and lowercase letters</li>
+                            <li data-rule="num"><i class="far fa-circle"></i> A number</li>
+                            <li data-rule="sym"><i class="far fa-circle"></i> A special character</li>
+                        </ul>
+                    </div>
+
+                    <div class="reg-field">
+                        @Html.LabelFor(m => m.ConfirmPassword, "Confirm password")
+                        <div class="reg-input">
+                            <i class="fas fa-lock ai"></i>
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control has-toggle" + inv("ConfirmPassword"), placeholder = "Re-enter your password", autocomplete = "new-password" })
+                            <button type="button" class="reg-toggle" data-target="ConfirmPassword" aria-label="Show password"><i class="far fa-eye"></i></button>
+                        </div>
+                        <p class="reg-match" id="matchText" aria-live="polite"></p>
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "reg-error" })
+                    </div>
+                </div>
+
+                @* ---------------- STEP 3: YOUR PLAN ---------------- *@
+                <div class="reg-step" data-step="2">
+                    <h2 class="reg-step-title" tabindex="-1">Choose your plan</h2>
+                    <p class="reg-lead">Every account starts on the free Starter plan. You can upgrade at any time.</p>
+
+                    @if (plans.Count == 0)
+                    {
+                        <div class="alert alert-warning small">Hosting plans are not available right now. Please try again later.</div>
+                    }
+
+                    <div class="reg-plan-grid" role="radiogroup" aria-label="Hosting plan">
+                        @foreach (var p in plans)
+                        {
+                            <label class="reg-plan@(p.IsFeatured ? " featured" : "")">
+                                <input type="radio" name="SelectedPlanId" id="SelectedPlanId_@p.HostingPlanId"
+                                       value="@p.HostingPlanId" data-name="@p.Name" data-price="@p.MonthlyPrice.ToString("0")"
+                                       checked="@(vm.SelectedPlanId == p.HostingPlanId)" />
+                                <span class="box">
+                                    @if (p.IsFeatured)
+                                    {
+                                        <span class="reg-plan-badge">Most popular</span>
+                                    }
+                                    <span class="reg-plan-name">@p.Name</span>
+                                    <span class="reg-plan-price"><strong>@("R" + p.MonthlyPrice.ToString("0"))</strong> / month</span>
+                                    <span class="reg-plan-tag">@p.Tagline</span>
+                                    <span class="reg-plan-list">
+                                        @foreach (var f in p.FeatureList.Take(4))
+                                        {
+                                            <span><i class="fas fa-check"></i> @f</span>
+                                        }
+                                    </span>
+                                </span>
+                            </label>
+                        }
+                    </div>
+                    @Html.ValidationMessageFor(m => m.SelectedPlanId, "", new { @class = "reg-error" })
+
+                    <p class="reg-plan-note" id="planNote" hidden>
+                        <i class="fas fa-circle-info"></i>
+                        <span>Paid plans start once your payment is confirmed. Until then your account stays on Starter, and you can finish upgrading from your dashboard.</span>
+                    </p>
+
+                    <div class="reg-field reg-field-spaced">
+                        <span class="reg-label" id="atLabel">I am registering as a</span>
+                        <div class="reg-choice-grid" role="radiogroup" aria-labelledby="atLabel">
+                            @foreach (var t in accountTypes)
+                            {
+                                <label class="reg-choice">
+                                    <input type="radio" name="AccountType" id="AccountType_@t.Value" value="@t.Value" checked="@(vm.AccountType == t.Value)" />
+                                    <span class="box">
+                                        <i class="fas @t.Icon"></i>
+                                        <strong>@t.Title</strong>
+                                        <small>@t.Text</small>
+                                    </span>
+                                </label>
+                            }
+                        </div>
+                        @Html.ValidationMessageFor(m => m.AccountType, "", new { @class = "reg-error" })
+                    </div>
+
+                    <div class="reg-field" id="orgField" hidden>
+                        <label for="OrganisationName" id="orgLabel">Organisation name</label>
+                        <div class="reg-input">
+                            <i class="far fa-building ai"></i>
+                            @Html.TextBoxFor(m => m.OrganisationName, new { @class = "form-control" + inv("OrganisationName"), placeholder = "Company or institution name", autocomplete = "organization" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.OrganisationName, "", new { @class = "reg-error" })
+                    </div>
+
+                    <details class="reg-more" id="moreDetails" open="@moreOpen">
+                        <summary>Tell us what you will host <span class="reg-opt">Optional</span></summary>
+
+                        <div class="reg-row">
+                            <div class="reg-field">
+                                <label for="PrimaryUse">What will you host?</label>
+                                <div class="reg-input">
+                                    @Html.DropDownListFor(m => m.PrimaryUse, new SelectList(uses, "Value", "Text", vm.PrimaryUse), "Select an option", new { @class = "form-select" })
+                                </div>
+                            </div>
+                            <div class="reg-field">
+                                <label for="PreferredTechnology">Technology</label>
+                                <div class="reg-input">
+                                    @Html.DropDownListFor(m => m.PreferredTechnology, new SelectList(techs, "Value", "Text", vm.PreferredTechnology), "Select an option", new { @class = "form-select" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="reg-field">
+                            <span class="reg-label" id="dmLabel">How do you plan to deploy?</span>
+                            <div class="reg-chip-grid" role="radiogroup" aria-labelledby="dmLabel">
+                                @foreach (var d in deployMethods)
+                                {
+                                    <label class="reg-chip">
+                                        <input type="radio" name="PreferredDeploymentMethod" id="PreferredDeploymentMethod_@d.Value" value="@d.Value" checked="@(vm.PreferredDeploymentMethod == d.Value)" />
+                                        <span class="box"><i class="@d.Icon"></i> @d.Title</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                @* ---------------- STEP 4: REVIEW ---------------- *@
+                <div class="reg-step" data-step="3">
+                    <h2 class="reg-step-title" tabindex="-1">Review your information</h2>
+                    <p class="reg-lead">Check your details before creating your account. Use Edit to change anything.</p>
+
+                    <div class="reg-summary">
+                        <div class="reg-sum-card">
+                            <div class="reg-sum-head">
+                                <h3>Your details</h3>
+                                <button type="button" class="reg-edit" data-goto="0"><i class="fas fa-pen"></i> Edit</button>
+                            </div>
+                            <dl>
+                                <dt>Name</dt>
+                                <dd id="rvName"></dd>
+                                <dt>Email</dt>
+                                <dd id="rvEmail"></dd>
+                                <dt>Phone</dt>
+                                <dd id="rvPhone"></dd>
+                            </dl>
+                        </div>
+
+                        <div class="reg-sum-card">
+                            <div class="reg-sum-head">
+                                <h3>Security</h3>
+                                <button type="button" class="reg-edit" data-goto="1"><i class="fas fa-pen"></i> Edit</button>
+                            </div>
+                            <dl>
+                                <dt>Password</dt>
+                                <dd id="rvPassword"></dd>
+                            </dl>
+                        </div>
+
+                        <div class="reg-sum-card">
+                            <div class="reg-sum-head">
+                                <h3>Plan and hosting</h3>
+                                <button type="button" class="reg-edit" data-goto="2"><i class="fas fa-pen"></i> Edit</button>
+                            </div>
+                            <dl>
+                                <dt>Plan</dt>
+                                <dd id="rvPlan"></dd>
+                                <dt>Account</dt>
+                                <dd id="rvType"></dd>
+                                <dt id="rvOrgLabel">Organisation</dt>
+                                <dd id="rvOrg"></dd>
+                                <dt>Hosting</dt>
+                                <dd id="rvUse"></dd>
+                                <dt>Technology</dt>
+                                <dd id="rvTech"></dd>
+                                <dt>Deploy with</dt>
+                                <dd id="rvDeploy"></dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <p class="reg-verify-note">
+                        <i class="fas fa-envelope-circle-check"></i>
+                        <span>We will send a verification link to <strong id="rvEmail2"></strong>. You need to verify your email before you can log in.</span>
+                    </p>
+
+                    <div class="reg-terms">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.AcceptTerms, new { @class = "form-check-input" })
+                            <label class="form-check-label" for="AcceptTerms">
+                                I agree to the <a href="@Url.Action("Terms", "Legal")" target="_blank" rel="noopener">Terms and Conditions</a>
+                                and the <a href="@Url.Action("Privacy", "Legal")" target="_blank" rel="noopener">Privacy Policy</a>.
+                            </label>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.AcceptTerms, "", new { @class = "reg-error" })
+                    </div>
+
+                    <div class="reg-terms reg-terms-optional">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.MarketingConsent, new { @class = "form-check-input" })
+                            <label class="form-check-label" for="MarketingConsent">
+                                Send me CloudHub product updates by email. <span class="reg-opt">Optional</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reg-actions">
+                    <button type="button" class="reg-btn reg-btn-back" id="backBtn"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="reg-btn reg-btn-next" id="nextBtn">Continue <i class="fas fa-arrow-right"></i></button>
+                    <button type="submit" class="reg-btn reg-btn-next" id="submitBtn" hidden>Create Account</button>
+                </div>
+            }
+
+            <p class="reg-signin">
+                Already have an account? <a href="@Url.Action("Login", "CustomerAccount")">Sign in</a>
+            </p>
+        </div>
+
+        @* ======================= RIGHT: PROMO PANEL ======================= *@
+        <aside class="reg-aside" aria-label="About CloudHub">
+            <div class="reg-aside-inner">
+                <h2>Your applications.<br />Your infrastructure.<br />One platform.</h2>
+                <p>Deploy from GitHub, Visual Studio or a ZIP file, then manage projects, databases and billing from one dashboard.</p>
+
+                <div class="reg-orbit" aria-hidden="true">
+                    <span class="ring ring-1"></span>
+                    <span class="ring ring-2"></span>
+                    <span class="hub"><i class="fas fa-cloud-upload-alt"></i></span>
+                    <span class="sat sat-top"><i class="fab fa-github"></i></span>
+                    <span class="sat sat-right"><i class="fas fa-code"></i></span>
+                    <span class="sat sat-bottom"><i class="fas fa-file-zipper"></i></span>
+                    <span class="sat sat-left"><i class="fas fa-database"></i></span>
+                </div>
+
+                <ul class="reg-benefits">
+                    <li><i class="fas fa-circle-check"></i> Free Starter plan, no card needed</li>
+                    <li><i class="fas fa-circle-check"></i> ASP.NET MVC and static websites</li>
+                    <li><i class="fas fa-circle-check"></i> Prices in rand, upgrade anytime</li>
+                </ul>
             </div>
-
-            <button type="submit" class="btn auth-submit-btn">
-                Register Account
-            </button>
-        }
-
-        <p class="auth-bottom-text">
-            Already have an account?
-            <a href="@Url.Action("Login", "CustomerAccount")">
-                Sign in
-            </a>
-        </p>
+        </aside>
 
     </div>
 </section>
+
+@section scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('registerForm');
+            var steps = Array.prototype.slice.call(document.querySelectorAll('.reg-step'));
+            var stepperItems = document.querySelectorAll('#stepper li');
+            var stepSub = document.getElementById('stepSub');
+            var stepAlert = document.getElementById('stepAlert');
+            var backBtn = document.getElementById('backBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            var submitBtn = document.getElementById('submitBtn');
+            var titles = ['Your details', 'Security', 'Your plan', 'Review'];
+            var fieldsByStep = [
+                ['FirstName', 'LastName', 'EmailAddress', 'PhoneNumber'],
+                ['Password', 'ConfirmPassword'],
+                ['OrganisationName'],
+                ['AcceptTerms']
+            ];
+            var last = steps.length - 1;
+            var current = 0;
+            var errorCount = 0;
+
+            function $(id) { return document.getElementById(id); }
+            function msgEl(id) { return form.querySelector('[data-valmsg-for="' + id + '"]'); }
+            function radioValue(name) {
+                var r = form.querySelector('input[name="' + name + '"]:checked');
+                return r ? r.value : '';
+            }
+            function radioEl(name) { return form.querySelector('input[name="' + name + '"]:checked'); }
+            function selectText(id) {
+                var s = $(id);
+                return s && s.value ? s.options[s.selectedIndex].text : 'Not specified';
+            }
+
+            // \u0040 is the at-sign, written as an escape so Razor does not try to parse it
+            var emailRe = /^[^\s\u0040]+\u0040[^\s\u0040]+\.[^\s\u0040]+$/;
+            var phoneRe = /^\+?[0-9\s\-()]{9,15}$/;
+
+            function passwordChecks(v) {
+                return {
+                    len: v.length >= 8,
+                    case: /[a-z]/.test(v) && /[A-Z]/.test(v),
+                    num: /\d/.test(v),
+                    sym: /[^A-Za-z0-9]/.test(v)
+                };
+            }
+            function passwordScore(v) {
+                var c = passwordChecks(v), n = 0;
+                for (var k in c) { if (c[k]) n++; }
+                return n;
+            }
+
+            var validators = {
+                FirstName: function (v) { return v.trim() ? '' : 'Enter your first name.'; },
+                LastName: function (v) { return v.trim() ? '' : 'Enter your last name.'; },
+                EmailAddress: function (v) {
+                    if (!v.trim()) return 'Enter your email address.';
+                    return emailRe.test(v.trim()) ? '' : 'Enter a valid email address.';
+                },
+                PhoneNumber: function (v) {
+                    if (!v.trim()) return 'Enter your phone number.';
+                    return phoneRe.test(v.trim()) ? '' : 'Enter a valid phone number, for example 082 123 4567.';
+                },
+                Password: function (v) {
+                    if (!v) return 'Create a password.';
+                    return passwordScore(v) === 4 ? '' : 'Your password does not meet all the requirements.';
+                },
+                ConfirmPassword: function (v) {
+                    if (!v) return 'Confirm your password.';
+                    return v === $('Password').value ? '' : 'The passwords do not match.';
+                },
+                OrganisationName: function (v) {
+                    if (radioValue('AccountType') === 'Business' && !v.trim()) { return 'Enter your organisation name.'; }
+                    return '';
+                },
+                AcceptTerms: function () {
+                    return $('AcceptTerms').checked ? '' : 'You must accept the Terms and Conditions and Privacy Policy.';
+                }
+            };
+
+            function setError(id, text) {
+                var m = msgEl(id), el = $(id);
+                if (m) {
+                    m.textContent = text || '';
+                    m.className = 'reg-error ' + (text ? 'field-validation-error' : 'field-validation-valid');
+                }
+                if (el && el.type !== 'checkbox') { el.classList.toggle('is-invalid', !!text); }
+                if (el) { el.setAttribute('aria-invalid', text ? 'true' : 'false'); }
+            }
+
+            function validateField(id) {
+                var el = $(id);
+                var err = validators[id](el.type === 'checkbox' ? '' : el.value);
+                setError(id, err);
+                return err;
+            }
+
+            // Returns the id of the first invalid field in a step, or null
+            function validateStep(i) {
+                var firstBad = null;
+                errorCount = 0;
+                fieldsByStep[i].forEach(function (id) {
+                    if (validateField(id)) {
+                        errorCount++;
+                        if (!firstBad) { firstBad = id; }
+                    }
+                });
+                return firstBad;
+            }
+
+            function showAlert(count) {
+                if (!count) { stepAlert.hidden = true; stepAlert.textContent = ''; return; }
+                stepAlert.textContent = count === 1
+                    ? '1 field needs your attention before you continue.'
+                    : count + ' fields need your attention before you continue.';
+                stepAlert.hidden = false;
+            }
+
+            // Plan note: paid plans are not active until payment is confirmed
+            function updatePlanNote() {
+                var p = radioEl('SelectedPlanId');
+                $('planNote').hidden = !(p && parseInt(p.getAttribute('data-price'), 10) > 0);
+            }
+
+            // Organisation field: required for Business, optional for Student, hidden for Developer
+            function updateOrgField(clearError) {
+                var type = radioValue('AccountType');
+                var wrap = $('orgField'), label = $('orgLabel'), input = $('OrganisationName');
+                wrap.hidden = type === 'Individual';
+                if (type === 'Business') {
+                    label.textContent = 'Organisation name';
+                    input.placeholder = 'Company name';
+                } else if (type === 'Student') {
+                    label.textContent = 'Institution (optional)';
+                    input.placeholder = 'University or college';
+                }
+                if (type === 'Individual') { input.value = ''; }
+                if (clearError) { setError('OrganisationName', ''); }
+            }
+
+            function fillReview() {
+                var pwd = $('Password').value;
+                var type = radioValue('AccountType');
+                var typeNames = { Individual: 'Developer', Student: 'Student', Business: 'Business' };
+                var deployNames = { GitHub: 'GitHub repository', VisualStudio: 'Visual Studio', Zip: 'ZIP upload', NotSure: 'Not decided yet' };
+                var org = $('OrganisationName').value.trim();
+                var plan = radioEl('SelectedPlanId');
+
+                $('rvName').textContent = $('FirstName').value.trim() + ' ' + $('LastName').value.trim();
+                $('rvEmail').textContent = $('EmailAddress').value.trim();
+                $('rvEmail2').textContent = $('EmailAddress').value.trim();
+                $('rvPhone').textContent = $('PhoneNumber').value.trim();
+                $('rvPassword').textContent = pwd ? new Array(pwd.length + 1).join('\u2022') : 'Not set';
+
+                if (plan) {
+                    var price = parseInt(plan.getAttribute('data-price'), 10);
+                    $('rvPlan').textContent = plan.getAttribute('data-name') + (price > 0 ? ' (R' + price + ' per month, starts after payment)' : ' (free)');
+                } else {
+                    $('rvPlan').textContent = 'Not selected';
+                }
+
+                $('rvType').textContent = typeNames[type] || 'Developer';
+                $('rvOrgLabel').textContent = type === 'Student' ? 'Institution' : 'Organisation';
+                $('rvOrg').textContent = type === 'Individual' ? 'Not applicable' : (org || 'Not specified');
+                $('rvUse').textContent = selectText('PrimaryUse');
+                $('rvTech').textContent = selectText('PreferredTechnology');
+                $('rvDeploy').textContent = deployNames[radioValue('PreferredDeploymentMethod')] || 'Not specified';
+            }
+
+            function goTo(i, focusField) {
+                current = Math.max(0, Math.min(last, i));
+                showAlert(0);
+
+                steps.forEach(function (s, idx) { s.classList.toggle('active', idx === current); });
+
+                stepperItems.forEach(function (li, idx) {
+                    li.classList.toggle('done', idx < current);
+                    li.classList.toggle('current', idx === current);
+                    if (idx === current) { li.setAttribute('aria-current', 'step'); } else { li.removeAttribute('aria-current'); }
+                });
+
+                stepSub.textContent = 'Step ' + (current + 1) + ' of ' + steps.length + ' \u00B7 ' + titles[current];
+                backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+                nextBtn.hidden = current === last;
+                submitBtn.hidden = current !== last;
+
+                if (current === last) { fillReview(); }
+
+                var target = focusField ? $(focusField) : steps[current].querySelector('.reg-step-title');
+                if (target) { target.focus({ preventScroll: true }); }
+                var top = document.querySelector('.reg-shell').getBoundingClientRect().top + window.pageYOffset - 20;
+                if (window.pageYOffset > top) { window.scrollTo(0, top); }
+            }
+
+            function next() {
+                var bad = validateStep(current);
+                if (bad) { showAlert(errorCount); $(bad).focus(); return; }
+                goTo(current + 1);
+            }
+
+            nextBtn.addEventListener('click', next);
+            backBtn.addEventListener('click', function () { goTo(current - 1); });
+            document.querySelectorAll('[data-goto]').forEach(function (b) {
+                b.addEventListener('click', function () { goTo(parseInt(b.getAttribute('data-goto'), 10)); });
+            });
+
+            // Enter moves to the next step instead of submitting early
+            form.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && current < last && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT' && e.target.tagName !== 'SUMMARY') {
+                    e.preventDefault();
+                    next();
+                }
+            });
+
+            // Live feedback
+            Object.keys(validators).forEach(function (id) {
+                var el = $(id);
+                if (!el) return;
+                el.addEventListener('input', function () { if (el.type !== 'checkbox') setError(id, ''); });
+                el.addEventListener('change', function () { if (el.type === 'checkbox') setError(id, ''); });
+                el.addEventListener('blur', function () { if (el.type !== 'checkbox' && el.value) validateField(id); });
+            });
+
+            document.querySelectorAll('input[name="AccountType"]').forEach(function (r) {
+                r.addEventListener('change', function () { updateOrgField(true); });
+            });
+            document.querySelectorAll('input[name="SelectedPlanId"]').forEach(function (r) {
+                r.addEventListener('change', updatePlanNote);
+            });
+
+            // Show / hide password
+            document.querySelectorAll('.reg-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var input = $(btn.getAttribute('data-target'));
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+                    btn.firstElementChild.className = show ? 'far fa-eye-slash' : 'far fa-eye';
+                });
+            });
+
+            // Password strength + requirement checklist + match hint
+            var pw = $('Password'), confirm = $('ConfirmPassword');
+            var meter = $('pwMeter'), matchText = $('matchText');
+
+            function updateStrength() {
+                var checks = passwordChecks(pw.value);
+                document.querySelectorAll('#pwRules li').forEach(function (li) {
+                    var ok = checks[li.getAttribute('data-rule')];
+                    li.classList.toggle('ok', ok);
+                    li.firstElementChild.className = ok ? 'fas fa-circle-check' : 'far fa-circle';
+                });
+                meter.setAttribute('data-level', pw.value ? Math.max(1, passwordScore(pw.value)) : 0);
+            }
+            function updateMatch() {
+                if (!confirm.value) { matchText.textContent = ''; matchText.className = 'reg-match'; return; }
+                var ok = confirm.value === pw.value;
+                matchText.textContent = ok ? 'Passwords match' : 'Passwords do not match yet';
+                matchText.className = 'reg-match ' + (ok ? 'ok' : '');
+            }
+            pw.addEventListener('input', function () { updateStrength(); updateMatch(); });
+            confirm.addEventListener('input', updateMatch);
+
+            // Email typo hint
+            var typoFixes = {
+                'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com',
+                'gmail.con': 'gmail.com', 'gmail.co': 'gmail.com', 'gmaill.com': 'gmail.com',
+                'hotmial.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmail.con': 'hotmail.com',
+                'outlok.com': 'outlook.com', 'outlook.con': 'outlook.com',
+                'yahho.com': 'yahoo.com', 'yaho.com': 'yahoo.com', 'yahoo.con': 'yahoo.com'
+            };
+            var emailInput = $('EmailAddress'), emailHint = $('emailHint'), emailFix = $('emailFix');
+            function checkEmailTypo() {
+                var v = emailInput.value.trim();
+                var at = v.lastIndexOf('\u0040');
+                var fix = at > 0 ? typoFixes[v.slice(at + 1).toLowerCase()] : null;
+                if (fix) {
+                    emailFix.textContent = v.slice(0, at + 1) + fix;
+                    emailHint.hidden = false;
+                } else {
+                    emailHint.hidden = true;
+                }
+            }
+            emailInput.addEventListener('blur', checkEmailTypo);
+            emailInput.addEventListener('input', function () { emailHint.hidden = true; });
+            emailFix.addEventListener('click', function () {
+                emailInput.value = emailFix.textContent;
+                emailHint.hidden = true;
+                setError('EmailAddress', '');
+                saveDraft();
+            });
+
+            // Keep non-sensitive answers if the page is refreshed. Passwords are never saved.
+            var draftKey = 'cloudhubRegisterDraft';
+            var draftText = ['FirstName', 'LastName', 'EmailAddress', 'PhoneNumber', 'OrganisationName', 'PrimaryUse', 'PreferredTechnology'];
+            var draftRadios = ['AccountType', 'PreferredDeploymentMethod', 'SelectedPlanId'];
+            function saveDraft() {
+                try {
+                    var d = {};
+                    draftText.forEach(function (id) { d[id] = $(id).value; });
+                    draftRadios.forEach(function (n) { d[n] = radioValue(n); });
+                    sessionStorage.setItem(draftKey, JSON.stringify(d));
+                } catch (e) { }
+            }
+            function restoreDraft() {
+                try {
+                    var raw = sessionStorage.getItem(draftKey);
+                    if (!raw) return;
+                    var d = JSON.parse(raw);
+                    var planFromLink = window.location.search.indexOf('plan=') > -1;
+                    draftText.forEach(function (id) { if (d[id] && !$(id).value) { $(id).value = d[id]; } });
+                    draftRadios.forEach(function (n) {
+                        if (!d[n] || (n === 'SelectedPlanId' && planFromLink)) return;
+                        var r = form.querySelector('input[name="' + n + '"][value="' + d[n] + '"]');
+                        if (r) { r.checked = true; }
+                    });
+                } catch (e) { }
+            }
+            form.addEventListener('input', saveDraft);
+            form.addEventListener('change', saveDraft);
+
+            // Final check before posting, then block double submission
+            form.addEventListener('submit', function (e) {
+                for (var i = 0; i <= last; i++) {
+                    var bad = validateStep(i);
+                    if (bad) {
+                        e.preventDefault();
+                        goTo(i, bad);
+                        showAlert(errorCount);
+                        return;
+                    }
+                }
+                try { sessionStorage.removeItem(draftKey); } catch (err) { }
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating your account...';
+            });
+            window.addEventListener('pageshow', function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            });
+
+            // If the server rejected the form (for example, email already registered),
+            // reopen the wizard on the first step that has an error.
+            function firstServerErrorStep() {
+                for (var i = 0; i < fieldsByStep.length; i++) {
+                    for (var j = 0; j < fieldsByStep[i].length; j++) {
+                        var m = msgEl(fieldsByStep[i][j]);
+                        if (m && m.textContent.trim()) { return { step: i, field: fieldsByStep[i][j] }; }
+                    }
+                }
+                var extras = ['AccountType', 'SelectedPlanId'];
+                for (var k = 0; k < extras.length; k++) {
+                    var e2 = msgEl(extras[k]);
+                    if (e2 && e2.textContent.trim()) { return { step: 2, field: null }; }
+                }
+                return null;
+            }
+
+            var serverError = firstServerErrorStep();
+            var generalError = !!document.querySelector('.reg-general-error');
+            if (!serverError && !generalError) { restoreDraft(); }
+
+            updateStrength();
+            updateOrgField(false);
+            updatePlanNote();
+
+            if (serverError) {
+                goTo(serverError.step, serverError.field);
+            } else if (generalError) {
+                // Passwords are not re-posted by the browser, so ask for them again
+                goTo(1);
+            } else {
+                goTo(0);
+            }
+        })();
+    </script>
+}

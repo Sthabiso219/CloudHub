@@ -1,0 +1,494 @@
+﻿
+@using System
+
+@{
+    string email = "";
+
+    if (User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated)
+    {
+        email = User.Identity.Name ?? "";
+    }
+
+    string fullName = ViewBag.UserFullName as string;
+
+    if (string.IsNullOrWhiteSpace(fullName))
+    {
+        fullName = email;
+    }
+
+    if (string.IsNullOrWhiteSpace(fullName))
+    {
+        fullName = "My Account";
+    }
+
+    string active = ViewBag.ActivePage as string ?? "";
+
+    string initials = "";
+
+    foreach (var part in fullName.Split(
+        new[] { ' ' },
+        StringSplitOptions.RemoveEmptyEntries))
+    {
+        if (initials.Length < 2)
+        {
+            initials += char.ToUpperInvariant(part[0]);
+        }
+    }
+
+    if (initials == "")
+    {
+        initials = "?";
+    }
+
+    Func<string, string> activeClass = key =>
+        active == key ? "active" : "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewBag.Title - CloudHub</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <!-- Main CloudHub CSS -->
+    <link href="@Url.Content("~/Content/cloudhub.css")?v=@(System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/cloudhub.css")).Ticks)"
+          rel="stylesheet" />
+
+    <!-- Page-specific CSS -->
+    @RenderSection("styles", required: false)
+
+</head>
+
+<body class="ch-body">
+
+    <div class="ch-dashboard" id="chShell">
+
+        <script>
+            // Restore the saved sidebar state before the page paints (no flicker).
+            try {
+                if (localStorage.getItem("chSidebar") === "collapsed") {
+                    document.getElementById("chShell").classList.add("ch-collapsed");
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="ch-sidebar"
+               id="chSidebar"
+               aria-label="Main navigation">
+
+            <!-- BRAND -->
+            <div class="ch-sidebar-brand">
+
+                <a href="@Url.Action("Index", "CustomerDashboard")">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>CloudHub</span>
+                </a>
+
+            </div>
+
+            <!-- NAVIGATION -->
+            <nav class="ch-sidebar-nav">
+
+                <!-- WORKSPACE -->
+                <div class="ch-nav-section">
+
+                    <span class="ch-nav-section-title">
+                        Workspace
+                    </span>
+
+                    <a href="@Url.Action("Index", "CustomerDashboard")"
+                       class="ch-nav-link @activeClass("dashboard")">
+
+                        <i class="fas fa-table-cells-large"></i>
+                        <span>Dashboard</span>
+
+                    </a>
+
+                    <a href="#"
+                       class="ch-nav-link ch-nav-disabled"
+                       tabindex="-1"
+                       aria-disabled="true">
+
+                        <i class="fas fa-folder"></i>
+                        <span>My Projects</span>
+                        <small>Soon</small>
+
+                    </a>
+
+                    <a href="@Url.Action("Index", "Deployment")"
+                       class="ch-nav-link @activeClass("deployments")">
+
+                        <i class="fas fa-rocket"></i>
+                        <span>Deployments</span>
+
+                    </a>
+
+                    <a href="#"
+                       class="ch-nav-link ch-nav-disabled"
+                       tabindex="-1"
+                       aria-disabled="true">
+
+                        <i class="fas fa-database"></i>
+                        <span>Databases</span>
+                        <small>Soon</small>
+
+                    </a>
+
+                </div>
+
+                <!-- ACCOUNT -->
+                <div class="ch-nav-section">
+
+                    <span class="ch-nav-section-title">
+                        Account
+                    </span>
+
+                    <a href="#"
+                       class="ch-nav-link ch-nav-disabled"
+                       tabindex="-1"
+                       aria-disabled="true">
+
+                        <i class="fas fa-credit-card"></i>
+                        <span>Billing</span>
+                        <small>Soon</small>
+
+                    </a>
+
+                    <a href="#"
+                       class="ch-nav-link ch-nav-disabled"
+                       tabindex="-1"
+                       aria-disabled="true">
+
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                        <small>Soon</small>
+
+                    </a>
+
+                    <a href="@Url.Action("Profile", "CustomerDashboard")"
+                       class="ch-nav-link @activeClass("profile")">
+
+                        <i class="fas fa-user-circle"></i>
+                        <span>My Profile</span>
+
+                    </a>
+
+                </div>
+
+            </nav>
+
+            <!-- SIDEBAR LOGOUT -->
+            <div class="ch-sidebar-bottom">
+
+                @using (Html.BeginForm(
+                    "Logout",
+                    "CustomerAccount",
+                    FormMethod.Post,
+                    new { @class = "m-0" }))
+                {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="ch-nav-link ch-logout-btn">
+
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Logout</span>
+
+                </button>
+                }
+
+            </div>
+
+        </aside>
+
+        <!-- MOBILE OVERLAY -->
+        <div class="ch-overlay" id="chOverlay"></div>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <div class="ch-main">
+
+            <!-- TOPBAR -->
+            <header class="ch-topbar">
+
+                <div class="ch-topbar-left">
+
+                    <!-- DESKTOP COLLAPSE BUTTON -->
+                    <button type="button"
+                            class="ch-collapse-btn"
+                            id="chCollapseBtn"
+                            aria-label="Collapse sidebar"
+                            aria-controls="chSidebar"
+                            aria-expanded="true"
+                            title="Collapse sidebar">
+
+                        <i class="fas fa-angles-left"></i>
+
+                    </button>
+
+                    <!-- MOBILE MENU BUTTON -->
+                    <button type="button"
+                            class="ch-mobile-menu"
+                            id="chMobileMenu"
+                            aria-label="Open menu"
+                            aria-controls="chSidebar"
+                            aria-expanded="false">
+
+                        <i class="fas fa-bars"></i>
+
+                    </button>
+
+                    <div>
+
+                        <span class="ch-topbar-label">
+                            @(ViewBag.TopbarLabel ?? "CloudHub")
+                        </span>
+
+                        <h1 class="ch-topbar-title">
+                            @ViewBag.Title
+                        </h1>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER DROPDOWN -->
+                <div class="dropdown">
+
+                    <button class="ch-user-dropdown"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                        <span class="ch-avatar">
+                            @initials
+                        </span>
+
+                        <span class="ch-user-details">
+
+                            <strong>@fullName</strong>
+
+                            @if (!string.IsNullOrWhiteSpace(email) &&
+                                 fullName != email)
+                            {
+                            <small>@email</small>
+                            }
+
+                        </span>
+
+                        <i class="fas fa-chevron-down ch-user-caret"></i>
+
+                    </button>
+
+
+                    <!-- DROPDOWN MENU -->
+                    <ul class="dropdown-menu dropdown-menu-end ch-dropdown-menu">
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="@Url.Action("Profile", "CustomerDashboard")">
+
+                                <i class="far fa-user me-2"></i>
+                                My Profile
+
+                            </a>
+
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                        <li>
+
+                            @using (Html.BeginForm(
+                                "Logout",
+                                "CustomerAccount",
+                                FormMethod.Post,
+                                new { @class = "m-0" }))
+                            {
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="dropdown-item text-danger">
+
+                                <i class="fas fa-right-from-bracket me-2"></i>
+                                Logout
+
+                            </button>
+                            }
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </header>
+
+
+            <!-- PAGE CONTENT -->
+            <main class="ch-content">
+
+                @RenderBody()
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- CloudHub Mobile Navigation -->
+    <script>
+
+        (function () {
+
+            var sidebar = document.getElementById("chSidebar");
+            var overlay = document.getElementById("chOverlay");
+            var button = document.getElementById("chMobileMenu");
+
+            // Stop if required elements are missing.
+            if (!sidebar || !overlay || !button) {
+                return;
+            }
+
+            function setOpen(open) {
+
+                sidebar.classList.toggle("ch-open", open);
+
+                overlay.classList.toggle("ch-open", open);
+
+                button.setAttribute(
+                    "aria-expanded",
+                    open ? "true" : "false"
+                );
+
+            }
+
+            // Open and close sidebar.
+            button.addEventListener("click", function () {
+
+                var isOpen = sidebar.classList.contains("ch-open");
+
+                setOpen(!isOpen);
+
+            });
+
+            // Close sidebar when overlay is clicked.
+            overlay.addEventListener("click", function () {
+
+                setOpen(false);
+
+            });
+
+            // Close sidebar using Escape key.
+            document.addEventListener("keydown", function (event) {
+
+                if (event.key === "Escape") {
+
+                    setOpen(false);
+
+                }
+
+            });
+
+            // Close sidebar when a navigation link is selected.
+            var navigationLinks = sidebar.querySelectorAll(
+                "a:not(.ch-nav-disabled)"
+            );
+
+            navigationLinks.forEach(function (link) {
+
+                link.addEventListener("click", function () {
+
+                    setOpen(false);
+
+                });
+
+            });
+
+        })();
+
+    </script>
+
+    <!-- CloudHub Sidebar Collapse (desktop) -->
+    <script>
+
+        (function () {
+
+            var shell = document.getElementById("chShell");
+            var sidebar = document.getElementById("chSidebar");
+            var button = document.getElementById("chCollapseBtn");
+
+            if (!shell || !sidebar || !button) {
+                return;
+            }
+
+            // Show each link's name as a tooltip (useful while collapsed).
+            sidebar.querySelectorAll(".ch-nav-link").forEach(function (link) {
+                var label = link.querySelector("span");
+                if (label) {
+                    link.setAttribute("title", label.textContent.trim());
+                }
+            });
+
+            function render() {
+                var collapsed = shell.classList.contains("ch-collapsed");
+                var text = collapsed ? "Expand sidebar" : "Collapse sidebar";
+
+                button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+                button.setAttribute("aria-label", text);
+                button.setAttribute("title", text);
+            }
+
+            button.addEventListener("click", function () {
+
+                shell.classList.toggle("ch-collapsed");
+
+                try {
+                    localStorage.setItem(
+                        "chSidebar",
+                        shell.classList.contains("ch-collapsed") ? "collapsed" : "expanded"
+                    );
+                } catch (e) { }
+
+                render();
+            });
+
+            render();
+
+        })();
+
+    </script>
+
+    <!-- Page-specific JavaScript -->
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

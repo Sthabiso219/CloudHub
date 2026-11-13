@@ -1,0 +1,57 @@
+﻿@model CloudHub.Models.ViewModels.ResendVerificationViewModel
+@{
+    ViewBag.Title = "Resend verification email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool sent = ViewBag.Sent == true;
+}
+
+<section class="auth-section">
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <i class="fas fa-cloud"></i>
+            <h2>CloudHub</h2>
+        </div>
+
+        <h3>Resend verification email</h3>
+        <p class="auth-subtitle">Enter the email address you registered with and we will send a new link.</p>
+
+        @if (sent)
+        {
+            <div class="alert alert-success small" role="status">
+                <i class="fas fa-envelope-circle-check me-2"></i>
+                If that address belongs to an account that still needs verifying, a new link is on its way.
+                Check your inbox and spam folder. The link expires after 24 hours.
+            </div>
+        }
+
+        @using (Html.BeginForm("ResendVerification", "CustomerAccount", FormMethod.Post, new { novalidate = "novalidate" }))
+        {
+            @Html.AntiForgeryToken()
+
+            if (ViewData.ModelState.ContainsKey(string.Empty) && ViewData.ModelState[string.Empty].Errors.Count > 0)
+            {
+                <div class="alert alert-danger small py-2" role="alert">
+                    @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+                </div>
+            }
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.EmailAddress, "Email address")
+                @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", type = "email", placeholder = "you@example.com", autocomplete = "email" })
+                @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn auth-submit-btn">
+                @(sent ? "Send again" : "Send verification email")
+            </button>
+        }
+
+        <p class="auth-bottom-text">
+            <a href="@Url.Action("Login", "CustomerAccount")">Back to login</a>
+        </p>
+    </div>
+</section>

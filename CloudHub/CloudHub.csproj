@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\cloudhub.css" />
+    <Content Include="Content\customer-dashboard.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
@@ -117,7 +118,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CustomerAccountController.cs" />
+    <Compile Include="Controllers\CustomerDashboardController.cs" />
+    <Compile Include="Controllers\DeploymentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LegalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -133,12 +137,39 @@
     <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.Designer.cs">
       <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.cs" />
+    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.Designer.cs">
+      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611112220139_new.cs" />
+    <Compile Include="Migrations\202611112220139_new.Designer.cs">
+      <DependentUpon>202611112220139_new.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.cs" />
+    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.Designer.cs">
+      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.cs" />
+    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.Designer.cs">
+      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CloudHubDBContext.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Deployment.cs" />
     <Compile Include="Models\EmailVerificationToken.cs" />
-    <Compile Include="Models\LoginCustomerViewModel.cs" />
-    <Compile Include="Models\RegisterCustomerViewModel.cs" />
+    <Compile Include="Models\HostingPlan.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\RegistrationSecurity.cs" />
+    <Compile Include="Models\Subscription.cs" />
+    <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
+    <Compile Include="Models\ViewModel\CustomerProfile.cs" />
+    <Compile Include="Models\ViewModel\DeploymentPageViewModel.cs" />
+    <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
+    <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
+    <Compile Include="Models\PasswordResetToken.cs" />
+    <Compile Include="Models\ViewModel\RegisterCustomerViewModel.cs" />
+    <Compile Include="Models\ViewModel\ResetPasswordViewMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\VerificationTokenService.cs" />
@@ -154,6 +185,20 @@
     <Content Include="Views\CustomerAccount\RegistrationSuccess.cshtml" />
     <Content Include="Views\CustomerAccount\VerifyEmail.cshtml" />
     <Content Include="Views\CustomerAccount\Login.cshtml" />
+    <Content Include="Views\CustomerAccount\ForgotPassword.cshtml" />
+    <Content Include="Views\CustomerAccount\ResetPassword.cshtml" />
+    <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
+    <Content Include="Views\CustomerDashboard\Index.cshtml" />
+    <Content Include="Views\Legal\Terms.cshtml" />
+    <Content Include="Views\Legal\Privacy.cshtml" />
+    <Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
+    <Content Include="Views\CustomerDashboard\Profile.cshtml" />
+    <Content Include="Views\Shared\_DashboardLayout.cshtml" />
+    <Content Include="Views\Shared\_PublicNavbar.cshtml" />
+    <Content Include="Views\Shared\_PublicFooter.cshtml" />
+    <Content Include="Views\CustomerDashboard\_ViewStart.cshtml" />
+    <Content Include="Views\Deployment\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -173,6 +218,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611111818267_AddEmailVerificationTokens.resx">
       <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112030011_AddPasswordResetTokens.resx">
+      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112220139_new.resx">
+      <DependentUpon>202611112220139_new.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.resx">
+      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611122012082_AddProjectsAndDeployments.resx">
+      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -1,0 +1,136 @@
+﻿@model CloudHub.Models.ViewModels.CustomerDashboardViewModel
+@{
+    // No Layout line: CustomerDashboard/_ViewStart.cshtml applies _DashboardLayout.
+    string firstName = Model == null ? "" : (Model.FirstName ?? "").Trim();
+    string lastName = Model == null ? "" : (Model.LastName ?? "").Trim();
+    string fullName = (firstName + " " + lastName).Trim();
+
+    ViewBag.Title = "Dashboard";
+    ViewBag.TopbarLabel = "Overview";
+    ViewBag.ActivePage = "dashboard"; // must match activeClass("dashboard") in _DashboardLayout
+    ViewBag.UserFullName = fullName;
+
+    // ---- Storage (properties that exist on the view model) ----
+    bool hasPercentage = Model != null && Model.StoragePercentage.HasValue;
+    double percentage = hasPercentage
+        ? Math.Max(0, Math.Min(100, Convert.ToDouble(Model.StoragePercentage.Value)))
+        : 0;
+    string usage = percentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "%";
+
+    bool hasStorage = Model != null && Model.StorageUsedGB.HasValue;
+    string storage = hasStorage
+        ? Convert.ToDouble(Model.StorageUsedGB.Value).ToString("0.##") + " GB"
+        : "—";
+
+    // ---- Summary values (nullable until the project/deployment modules fill them) ----
+    string projects = (Model != null && Model.TotalProjects.HasValue) ? Model.TotalProjects.Value.ToString() : "—";
+    string deployments = (Model != null && Model.TotalDeployments.HasValue) ? Model.TotalDeployments.Value.ToString() : "—";
+    string plan = (Model == null || string.IsNullOrWhiteSpace(Model.CurrentPlan)) ? "No plan" : Model.CurrentPlan;
+}
+
+<div class="ch-page-heading">
+    <h2>@(string.IsNullOrEmpty(firstName) ? "Dashboard" : "Welcome back, " + firstName)</h2>
+    <p>Here is an overview of your CloudHub account.</p>
+</div>
+
+<!-- Summary cards -->
+<div class="ch-stats-grid">
+    <div class="ch-stat-card">
+        <div class="ch-stat-icon"><i class="fas fa-folder"></i></div>
+        <span>Projects</span>
+        <h2>@projects</h2>
+    </div>
+
+    <div class="ch-stat-card">
+        <div class="ch-stat-icon"><i class="fas fa-rocket"></i></div>
+        <span>Deployments</span>
+        <h2>@deployments</h2>
+    </div>
+
+    <div class="ch-stat-card">
+        <div class="ch-stat-icon"><i class="fas fa-database"></i></div>
+        <span>Storage used</span>
+        <h2>@storage</h2>
+    </div>
+
+    <div class="ch-stat-card">
+        <div class="ch-stat-icon"><i class="fas fa-credit-card"></i></div>
+        <span>Current plan</span>
+        <h2>@plan</h2>
+    </div>
+</div>
+
+<div class="ch-panels-grid">
+
+    <!-- Recent activity -->
+    <section class="ch-panel">
+        <div class="ch-panel-heading">
+            <h3>Recent activity</h3>
+            <a class="ch-muted-link" href="@Url.Action("Index", "Deployment")">View all</a>
+        </div>
+
+        @if (Model == null || Model.RecentActivities == null || Model.RecentActivities.Count == 0)
+        {
+            <div class="ch-empty-state">
+                <i class="fas fa-clock-rotate-left"></i>
+                <h4>No recent activity</h4>
+                <p>
+                    Your deployments and project activity will appear here.
+                </p>
+                <a class="ch-btn ch-btn-primary" style="margin-top:16px"
+                   href="@Url.Action("Index", "Deployment")">
+                    <i class="fas fa-rocket"></i> Go to deployments
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="ch-activity-list">
+                @foreach (var activity in Model.RecentActivities)
+                {
+                    <div class="ch-activity-item">
+                        <span class="ch-activity-dot"></span>
+                        <div>
+                            <strong>@activity.Description</strong>
+                            <small>@activity.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <!-- Resource usage -->
+    <section class="ch-panel">
+        <div class="ch-panel-heading">
+            <h3>Resource usage</h3>
+        </div>
+
+        <div class="ch-resource-content">
+            <div class="ch-usage-ring" style="--usage: @usage">
+                <div class="ch-usage-inner">
+                    @if (hasPercentage)
+                    {
+                        <strong>@percentage.ToString("0")%</strong>
+                    }
+                    else
+                    {
+                        <strong>&mdash;</strong>
+                    }
+                </div>
+            </div>
+
+            <p class="ch-resource-caption">
+                @if (Model != null && Model.StorageUsedGB.HasValue && Model.StorageLimitGB.HasValue)
+                {
+                    <text>@Convert.ToDouble(Model.StorageUsedGB.Value).ToString("0.##") GB of @Convert.ToDouble(Model.StorageLimitGB.Value).ToString("0.##") GB</text>
+                }
+                else
+                {
+                    <text>Storage data not available yet.</text>
+                }
+            </p>
+        </div>
+    </section>
+
+</div>
