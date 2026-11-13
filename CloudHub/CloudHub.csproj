@@ -1,303 +1,412 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props')" />
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{55F85D8D-8872-484E-A9C6-FAB2D8FD8D87}</ProjectGuid>
-    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudHub</RootNamespace>
-    <AssemblyName>CloudHub</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
-    <IISExpressSSLPort>44347</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
-    <UseGlobalApplicationHostFile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.6.0-preview1-final\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.6.0-preview1-final\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Web.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages.Deployment">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Helpers">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure">
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Mvc">
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.9\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.9\lib\net45\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\cloudhub.css" />
-    <Content Include="Content\customer-dashboard.css" />
-    <Content Include="Content\Site.css" />
-    <Content Include="Global.asax" />
-    <Content Include="Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\CustomerAccountController.cs" />
-    <Compile Include="Controllers\CustomerDashboardController.cs" />
-    <Compile Include="Controllers\DeploymentController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LegalController.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611111748594_CreateCustomerTable.cs" />
-    <Compile Include="Migrations\202611111748594_CreateCustomerTable.Designer.cs">
-      <DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611111757547_CreateCustomerTable1.cs" />
-    <Compile Include="Migrations\202611111757547_CreateCustomerTable1.Designer.cs">
-      <DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.cs" />
-    <Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.Designer.cs">
-      <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.cs" />
-    <Compile Include="Migrations\202611112030011_AddPasswordResetTokens.Designer.cs">
-      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611112220139_new.cs" />
-    <Compile Include="Migrations\202611112220139_new.Designer.cs">
-      <DependentUpon>202611112220139_new.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.cs" />
-    <Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.Designer.cs">
-      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.cs" />
-    <Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.Designer.cs">
-      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\CloudHubDBContext.cs" />
-    <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\Deployment.cs" />
-    <Compile Include="Models\EmailVerificationToken.cs" />
-    <Compile Include="Models\HostingPlan.cs" />
-    <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\RegistrationSecurity.cs" />
-    <Compile Include="Models\Subscription.cs" />
-    <Compile Include="Models\ViewModel\CustomerDashboard.cs" />
-    <Compile Include="Models\ViewModel\CustomerProfile.cs" />
-    <Compile Include="Models\ViewModel\DeploymentPageViewModel.cs" />
-    <Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
-    <Compile Include="Models\ViewModel\HostedApplicationViewModel.cs" />
-    <Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
-    <Compile Include="Models\PasswordResetToken.cs" />
-    <Compile Include="Models\ViewModel\RegisterCustomerViewModel.cs" />
-    <Compile Include="Models\ViewModel\ResetPasswordViewMode.cs" />
-    <Compile Include="Models\ViewModel\ZipDevelopmentViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\EmailService.cs" />
-    <Compile Include="Services\VerificationTokenService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\web.config" />
-    <None Include="packages.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Shared.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\CustomerAccount\Register.cshtml" />
-    <Content Include="Views\CustomerAccount\RegistrationSuccess.cshtml" />
-    <Content Include="Views\CustomerAccount\VerifyEmail.cshtml" />
-    <Content Include="Views\CustomerAccount\Login.cshtml" />
-    <Content Include="Views\CustomerAccount\ForgotPassword.cshtml" />
-    <Content Include="Views\CustomerAccount\ResetPassword.cshtml" />
-    <Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
-    <Content Include="Views\CustomerDashboard\Index.cshtml" />
-    <Content Include="Views\Legal\Terms.cshtml" />
-    <Content Include="Views\Legal\Privacy.cshtml" />
-    <Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
-<<<<<<< HEAD
-    <Content Include="Views\Deployment\Create.cshtml" />
-=======
-    <Content Include="Views\CustomerDashboard\Profile.cshtml" />
-    <Content Include="Views\Shared\_DashboardLayout.cshtml" />
-    <Content Include="Views\Shared\_PublicNavbar.cshtml" />
-    <Content Include="Views\Shared\_PublicFooter.cshtml" />
-    <Content Include="Views\CustomerDashboard\_ViewStart.cshtml" />
->>>>>>> a8adc92595b7bae0e453da6de9a24708c9210d28
-    <Content Include="Views\Deployment\Index.cshtml" />
-    <Content Include="Views\Deployment\Details.cshtml" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202611111748594_CreateCustomerTable.resx">
-      <DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611111757547_CreateCustomerTable1.resx">
-      <DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611111818267_AddEmailVerificationTokens.resx">
-      <DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611112030011_AddPasswordResetTokens.resx">
-      <DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611112220139_new.resx">
-      <DependentUpon>202611112220139_new.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.resx">
-      <DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202611122012082_AddProjectsAndDeployments.resx">
-      <DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-  </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-        <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>54260</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44347/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-        </WebProjectProperties>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets'))" />
-  </Target>
-  <Import Project="..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets')" />
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<!-- NuGet package imports -->
+	<Import
+	  Project="..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props"
+	  Condition="Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props')" />
+
+	<Import
+	  Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props"
+	  Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+
+	<Import
+	  Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+	  Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
+	<!-- General project configuration -->
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProductVersion />
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{55F85D8D-8872-484E-A9C6-FAB2D8FD8D87}</ProjectGuid>
+		<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>CloudHub</RootNamespace>
+		<AssemblyName>CloudHub</AssemblyName>
+		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+		<UseIISExpress>true</UseIISExpress>
+		<Use64BitIISExpress />
+		<IISExpressSSLPort>44347</IISExpressSSLPort>
+		<IISExpressAnonymousAuthentication />
+		<IISExpressWindowsAuthentication />
+		<IISExpressUseClassicPipelineMode />
+		<UseGlobalApplicationHostFile />
+		<NuGetPackageImportStamp />
+	</PropertyGroup>
+
+	<!-- Debug configuration -->
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+
+	<!-- Release configuration -->
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+
+	<!-- Framework and Entity Framework references -->
+	<ItemGroup>
+
+		<Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+			<HintPath>..\packages\EntityFramework.6.6.0-preview1-final\lib\net45\EntityFramework.dll</HintPath>
+		</Reference>
+
+		<Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+			<HintPath>..\packages\EntityFramework.6.6.0-preview1-final\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+		</Reference>
+
+		<Reference Include="Microsoft.CSharp" />
+
+		<Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+			<HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+
+		<Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+			<HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+
+		<Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+			<HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+
+		<Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+			<HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+
+		<Reference Include="System.Net.Http" />
+		<Reference Include="System.Web.DynamicData" />
+		<Reference Include="System.Web.Entity" />
+		<Reference Include="System.Web.ApplicationServices" />
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+		<Reference Include="System" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="System.Web.Extensions" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Drawing" />
+		<Reference Include="System.Web" />
+		<Reference Include="System.Xml" />
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.Web.Services" />
+		<Reference Include="System.EnterpriseServices" />
+
+	</ItemGroup>
+
+	<!-- ASP.NET MVC and Web API references -->
+	<ItemGroup>
+
+		<Reference Include="System.Web.Razor">
+			<HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Webpages">
+			<HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Webpages.Deployment">
+			<HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Webpages.Razor">
+			<HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Helpers">
+			<HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
+		</Reference>
+
+		<Reference Include="Microsoft.Web.Infrastructure">
+			<HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Mvc">
+			<HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
+		</Reference>
+
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Net.Http.Formatting">
+			<HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Http">
+			<HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.9\lib\net45\System.Web.Http.dll</HintPath>
+		</Reference>
+
+		<Reference Include="System.Web.Http.WebHost">
+			<HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.9\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+		</Reference>
+
+		<Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+			<HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+		</Reference>
+
+	</ItemGroup>
+
+	<!-- Content files -->
+	<ItemGroup>
+		<Content Include="Content\cloudhub.css" />
+		<Content Include="Content\customer-dashboard.css" />
+		<Content Include="Content\Site.css" />
+		<Content Include="Global.asax" />
+		<Content Include="Web.config" />
+	</ItemGroup>
+
+	<!-- Controllers, models, services, and migrations -->
+	<ItemGroup>
+
+		<Compile Include="App_Start\RouteConfig.cs" />
+		<Compile Include="App_Start\WebApiConfig.cs" />
+
+		<Compile Include="Controllers\CustomerAccountController.cs" />
+		<Compile Include="Controllers\CustomerDashboardController.cs" />
+		<Compile Include="Controllers\DeploymentController.cs" />
+		<Compile Include="Controllers\HomeController.cs" />
+		<Compile Include="Controllers\LegalController.cs" />
+
+		<Compile Include="Global.asax.cs">
+			<DependentUpon>Global.asax</DependentUpon>
+		</Compile>
+
+		<!-- Entity Framework migrations -->
+		<Compile Include="Migrations\202611111748594_CreateCustomerTable.cs" />
+		<Compile Include="Migrations\202611111748594_CreateCustomerTable.Designer.cs">
+			<DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611111757547_CreateCustomerTable1.cs" />
+		<Compile Include="Migrations\202611111757547_CreateCustomerTable1.Designer.cs">
+			<DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.cs" />
+		<Compile Include="Migrations\202611111818267_AddEmailVerificationTokens.Designer.cs">
+			<DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611112030011_AddPasswordResetTokens.cs" />
+		<Compile Include="Migrations\202611112030011_AddPasswordResetTokens.Designer.cs">
+			<DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611112220139_new.cs" />
+		<Compile Include="Migrations\202611112220139_new.Designer.cs">
+			<DependentUpon>202611112220139_new.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.cs" />
+		<Compile Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.Designer.cs">
+			<DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.cs" />
+		<Compile Include="Migrations\202611122012082_AddProjectsAndDeployments.Designer.cs">
+			<DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
+		</Compile>
+
+		<Compile Include="Migrations\Configuration.cs" />
+
+		<!-- Models -->
+		<Compile Include="Models\CloudHubDBContext.cs" />
+		<Compile Include="Models\Customer.cs" />
+		<Compile Include="Models\Deployment.cs" />
+		<Compile Include="Models\EmailVerificationToken.cs" />
+		<Compile Include="Models\HostingPlan.cs" />
+		<Compile Include="Models\Project.cs" />
+		<Compile Include="Models\RegistrationSecurity.cs" />
+		<Compile Include="Models\Subscription.cs" />
+		<Compile Include="Models\PasswordResetToken.cs" />
+
+		<!-- View models -->
+		<Compile Include="Models\ViewModel\CustomerDashboard.cs" />
+		<Compile Include="Models\ViewModel\CustomerProfile.cs" />
+		<Compile Include="Models\ViewModel\DeploymentPageViewModel.cs" />
+		<Compile Include="Models\ViewModel\ForgotPasswordViewModel.cs" />
+		<Compile Include="Models\ViewModel\HostedApplicationViewModel.cs" />
+		<Compile Include="Models\ViewModel\LoginCustomerViewModel.cs" />
+		<Compile Include="Models\ViewModel\RegisterCustomerViewModel.cs" />
+		<Compile Include="Models\ViewModel\ResetPasswordViewMode.cs" />
+		<Compile Include="Models\ViewModel\ZipDevelopmentViewModel.cs" />
+
+		<!-- Services -->
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="Services\EmailService.cs" />
+		<Compile Include="Services\VerificationTokenService.cs" />
+
+	</ItemGroup>
+
+	<!-- Razor views and configuration -->
+	<ItemGroup>
+
+		<Content Include="Views\web.config" />
+		<None Include="packages.config" />
+		<Content Include="Views\_ViewStart.cshtml" />
+
+		<Content Include="Views\Shared\_Layout.cshtml" />
+		<Content Include="Views\Shared.cshtml" />
+
+		<Content Include="Views\Home\Index.cshtml" />
+
+		<!-- Customer account views -->
+		<Content Include="Views\CustomerAccount\Register.cshtml" />
+		<Content Include="Views\CustomerAccount\RegistrationSuccess.cshtml" />
+		<Content Include="Views\CustomerAccount\VerifyEmail.cshtml" />
+		<Content Include="Views\CustomerAccount\Login.cshtml" />
+		<Content Include="Views\CustomerAccount\ForgotPassword.cshtml" />
+		<Content Include="Views\CustomerAccount\ResetPassword.cshtml" />
+		<Content Include="Views\CustomerAccount\ForgotPasswordConfirmation.cshtml" />
+		<Content Include="Views\CustomerAccount\InvalidResetLink.cshtml" />
+		<Content Include="Views\CustomerAccount\ResendVerification.cshtml" />
+
+		<!-- Customer dashboard views -->
+		<Content Include="Views\CustomerDashboard\Index.cshtml" />
+		<Content Include="Views\CustomerDashboard\Profile.cshtml" />
+		<Content Include="Views\CustomerDashboard\_ViewStart.cshtml" />
+
+		<!-- Legal views -->
+		<Content Include="Views\Legal\Terms.cshtml" />
+		<Content Include="Views\Legal\Privacy.cshtml" />
+
+		<!-- Deployment views -->
+		<Content Include="Views\Deployment\Create.cshtml" />
+		<Content Include="Views\Deployment\Index.cshtml" />
+		<Content Include="Views\Deployment\Details.cshtml" />
+
+		<!-- Shared layouts -->
+		<Content Include="Views\Shared\_DashboardLayout.cshtml" />
+		<Content Include="Views\Shared\_PublicNavbar.cshtml" />
+		<Content Include="Views\Shared\_PublicFooter.cshtml" />
+
+		<!-- Web configuration transformations -->
+		<None Include="Web.Debug.config">
+			<DependentUpon>Web.config</DependentUpon>
+		</None>
+
+		<None Include="Web.Release.config">
+			<DependentUpon>Web.config</DependentUpon>
+		</None>
+
+	</ItemGroup>
+
+	<!-- Application folders -->
+	<ItemGroup>
+		<Folder Include="App_Data\" />
+	</ItemGroup>
+
+	<!-- Entity Framework migration resources -->
+	<ItemGroup>
+
+		<EmbeddedResource Include="Migrations\202611111748594_CreateCustomerTable.resx">
+			<DependentUpon>202611111748594_CreateCustomerTable.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611111757547_CreateCustomerTable1.resx">
+			<DependentUpon>202611111757547_CreateCustomerTable1.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611111818267_AddEmailVerificationTokens.resx">
+			<DependentUpon>202611111818267_AddEmailVerificationTokens.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611112030011_AddPasswordResetTokens.resx">
+			<DependentUpon>202611112030011_AddPasswordResetTokens.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611112220139_new.resx">
+			<DependentUpon>202611112220139_new.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611112259302_AddHostingPlansAndSubscriptions.resx">
+			<DependentUpon>202611112259302_AddHostingPlansAndSubscriptions.cs</DependentUpon>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="Migrations\202611122012082_AddProjectsAndDeployments.resx">
+			<DependentUpon>202611122012082_AddProjectsAndDeployments.cs</DependentUpon>
+		</EmbeddedResource>
+
+	</ItemGroup>
+
+	<!-- Visual Studio build targets -->
+	<PropertyGroup>
+		<VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+	<Import
+	  Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets"
+	  Condition="'$(VSToolsPath)' != ''" />
+
+	<Import
+	  Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets"
+	  Condition="false" />
+
+	<!-- Visual Studio web project settings -->
+	<ProjectExtensions>
+		<VisualStudio>
+			<FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+				<WebProjectProperties>
+					<UseIIS>True</UseIIS>
+					<AutoAssignPort>True</AutoAssignPort>
+					<DevelopmentServerPort>54260</DevelopmentServerPort>
+					<DevelopmentServerVPath>/</DevelopmentServerVPath>
+					<IISUrl>https://localhost:44347/</IISUrl>
+					<NTLMAuthentication>False</NTLMAuthentication>
+					<UseCustomServer>False</UseCustomServer>
+					<CustomServerUrl />
+					<SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+				</WebProjectProperties>
+			</FlavorProperties>
+		</VisualStudio>
+	</ProjectExtensions>
+
+	<!-- Verify required NuGet packages -->
+	<Target Name="EnsureNuGetPackageBuildImports"
+			BeforeTargets="PrepareForBuild">
+
+		<PropertyGroup>
+			<ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. The missing file is {0}.</ErrorText>
+		</PropertyGroup>
+
+		<Error
+		  Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')"
+		  Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+
+		<Error
+		  Condition="!Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props')"
+		  Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.props'))" />
+
+		<Error
+		  Condition="!Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets')"
+		  Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets'))" />
+
+	</Target>
+
+	<Import
+	  Project="..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets"
+	  Condition="Exists('..\packages\EntityFramework.6.6.0-preview1-final\build\EntityFramework.targets')" />
+
 </Project>

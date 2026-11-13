@@ -3,23 +3,21 @@
 @using System.Linq
 
 @{
-<<<<<<< HEAD
     ViewBag.Title = "CloudHub Deployments";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-=======
-    ViewBag.Title = "Deployments";
     ViewBag.TopbarLabel = "Deployments";
-    ViewBag.ActivePage = "deployments"; // lowercase, must match the layout
+    ViewBag.ActivePage = "deployments";
+
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
-    bool hasProjects = Model.Projects != null
-                       && Model.Projects.Any();
->>>>>>> a8adc92595b7bae0e453da6de9a24708c9210d28
+    bool hasApplications = Model != null
+                           && Model.Applications != null
+                           && Model.Applications.Any();
 }
 
 <div class="deploy-page">
     <div class="deploy-container">
 
+        <!-- BACK TO DASHBOARD -->
         <a href="@Url.Action("Index", "CustomerDashboard")"
            class="deploy-back">
             <i class="fas fa-arrow-left"></i>
@@ -28,13 +26,13 @@
 
         <div class="deploy-workspace">
 
-            <!-- HEADER -->
+            <!-- PAGE HEADER -->
             <div class="deploy-workspace-header">
                 <h1>CloudHub Deployments</h1>
                 <p>Manage your hosted applications</p>
             </div>
 
-            <!-- MAIN NAVIGATION -->
+            <!-- DEPLOYMENT NAVIGATION -->
             <nav class="deploy-workspace-tabs"
                  aria-label="Deployment navigation">
 
@@ -51,13 +49,14 @@
 
             </nav>
 
-            <!-- HOSTED APPLICATIONS -->
+            <!-- HOSTED APPLICATIONS CONTENT -->
             <div class="deploy-workspace-content">
 
-                @if (Model.Applications == null ||
-                     !Model.Applications.Any())
+                @if (!hasApplications)
                 {
+                    <!-- EMPTY STATE -->
                     <div class="deploy-empty-state">
+
                         <i class="fas fa-cloud"></i>
 
                         <h2>No hosted applications yet</h2>
@@ -72,17 +71,21 @@
                             <i class="fas fa-plus"></i>
                             Deploy Application
                         </a>
+
                     </div>
                 }
                 else
                 {
+                    <!-- APPLICATIONS LIST -->
                     <div class="deploy-applications">
 
                         @foreach (var app in Model.Applications)
                         {
                             <div class="deploy-application">
 
+                                <!-- APPLICATION INFORMATION -->
                                 <div class="deploy-application-info">
+
                                     <h3>@app.ProjectName</h3>
 
                                     <p>
@@ -93,21 +96,19 @@
 
                                     <p>
                                         Last deployed:
-                                        @app.CreatedAt.ToLocalTime()
-                                        .ToString("dd MMM yyyy HH:mm")
+                                        @app.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
                                     </p>
+
                                 </div>
 
+                                <!-- APPLICATION ACTIONS -->
                                 <div class="deploy-application-actions">
 
                                     <span class="deploy-status">
                                         @app.Status
                                     </span>
 
-                                    <a href="@Url.Action(
-                                        "Details",
-                                        "Deployment",
-                                        new { id = app.DeploymentId })"
+                                    <a href="@Url.Action("Details", "Deployment", new { id = app.DeploymentId })"
                                        class="deploy-button">
                                         Manage
                                     </a>
@@ -121,6 +122,7 @@
                 }
 
             </div>
+
         </div>
     </div>
 </div>
