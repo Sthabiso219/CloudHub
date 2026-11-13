@@ -1,0 +1,13 @@
+@model CloudHub.Models.ViewModels.ProjectFormViewModel
+@{
+    ViewBag.Title = "Edit Project"; ViewBag.TopbarLabel = "Projects"; ViewBag.ActivePage = "projects";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<div class="projects-page projects-narrow"><a href="@Url.Action("Details", "Project", new { id = Model.ProjectId })" class="deploy-back">&larr; Project Details</a><div class="projects-panel"><h2>Edit Project</h2>
+@using (Html.BeginForm("Edit", "Project", FormMethod.Post)) {
+    @Html.AntiForgeryToken() @Html.HiddenFor(m => m.ProjectId) @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    <div class="projects-field">@Html.LabelFor(m => m.ProjectName) @Html.TextBoxFor(m => m.ProjectName, new { maxlength = "100", required = "required" }) @Html.ValidationMessageFor(m => m.ProjectName)</div>
+    <div class="projects-field">@Html.LabelFor(m => m.Framework) @Html.DropDownListFor(m => m.Framework, new SelectList(new[] { "ASP.NET MVC 5", "ASP.NET Core", "Node.js", "Python", "PHP", "Java", "Static HTML" }, Model.Framework), "-- Select framework --", new { required = "required" }) @Html.ValidationMessageFor(m => m.Framework)</div>
+    <div class="projects-actions"><a class="deploy-button deploy-button-outline" href="@Url.Action("Details", "Project", new { id = Model.ProjectId })">Cancel</a><button class="deploy-button" type="submit">Save Changes</button></div>
+}
+</div></div>

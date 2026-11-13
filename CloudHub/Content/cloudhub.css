@@ -3790,4 +3790,150 @@ section[id] {
 
 =======
 }
->>>>>>> a8adc92595b7bae0e453da6de9a24708c9210d28
+> > > > > > > a8adc92595b7bae0e453da6de9a24708c9210d28
+/* Append to the end of the existing Content/cloudhub.css */
+.projects-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    color: #25292d
+}
+
+.projects-narrow {
+    max-width: 680px
+}
+
+.projects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin: 0 0 24px
+}
+
+    .projects-header h2, .projects-panel h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 5px
+    }
+
+    .projects-header p, .projects-panel > p, .projects-card p {
+        color: #60666d;
+        font-size: 14px
+    }
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 16px
+}
+
+.projects-card, .projects-panel, .projects-empty {
+    background: #fff;
+    border: 1px solid #e4e7ea;
+    border-radius: 12px;
+    padding: 24px
+}
+
+    .projects-card h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 14px 0 6px
+    }
+
+    .projects-card p {
+        margin: 6px 0
+    }
+
+    .projects-card > a {
+        display: inline-block;
+        margin-top: 14px;
+        font-weight: 650;
+        color: #25292d;
+        text-decoration: none
+    }
+
+.projects-icon {
+    font-size: 25px
+}
+
+.projects-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2e9e5f;
+    margin-right: 8px
+}
+
+.projects-small {
+    font-size: 12px !important;
+    color: #777 !important
+}
+
+.projects-panel {
+    margin-bottom: 18px
+}
+
+.projects-empty {
+    text-align: center;
+    padding: 55px 20px
+}
+
+    .projects-empty h3 {
+        margin-top: 16px
+    }
+
+.projects-field {
+    margin: 18px 0
+}
+
+    .projects-field label {
+        display: block;
+        font-size: 14px;
+        font-weight: 650;
+        margin-bottom: 7px
+    }
+
+    .projects-field input, .projects-field select, .projects-search input {
+        width: 100%;
+        border: 1px solid #d3d7db;
+        border-radius: 9px;
+        padding: 11px;
+        background: white
+    }
+
+    .projects-field .field-validation-error {
+        display: block;
+        color: #b42318;
+        font-size: 12px;
+        margin-top: 5px
+    }
+
+.projects-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 22px
+}
+
+.projects-search {
+    display: flex;
+    gap: 10px;
+    max-width: 470px;
+    margin-bottom: 22px
+}
+
+    .projects-search input {
+        min-width: 0
+    }
+
+@media(max-width:600px) {
+    .projects-header {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .projects-actions {
+        flex-wrap: wrap
+    }
+}

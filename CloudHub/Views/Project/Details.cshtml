@@ -1,0 +1,21 @@
+@model CloudHub.Models.ViewModels.ProjectDetailsViewModel
+@{
+    ViewBag.Title = "Project Details"; ViewBag.TopbarLabel = "Projects"; ViewBag.ActivePage = "projects";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<div class="projects-page"><a class="deploy-back" href="@Url.Action("Index", "Project")">&larr; My Projects</a>
+@if (TempData["ProjectSuccess"] != null) { <div class="alert alert-success" role="status">@TempData["ProjectSuccess"]</div> }
+@if (TempData["ProjectError"] != null) { <div class="alert alert-danger" role="alert">@TempData["ProjectError"]</div> }
+<div class="projects-header"><div><h2>@Model.ProjectName</h2><p>@Model.Framework &bull; @Model.Status</p></div><a href="@Url.Action("Edit", "Project", new { id = Model.ProjectId })" class="deploy-button deploy-button-outline">Edit Project</a></div>
+<div class="projects-panel"><h3>Overview</h3><p>Created: @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</p><p>Total deployments: @Model.Deployments.Count</p><a href="@Url.Action("Create", "Deployment")" class="deploy-button">Deploy Application</a><p class="projects-small">Choose this project on the deployment page.</p></div>
+<div class="projects-panel"><h3>Deployment History</h3>
+@if (!Model.Deployments.Any()) { <p>No deployment records yet.</p> }
+else { <div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Method</th><th>Status</th><th>Details</th></tr></thead><tbody>
+@foreach (var d in Model.Deployments) { <tr><td>@d.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td><td>@d.DeploymentMethod</td><td>@d.Status</td><td>@if (d.Status == "Successful") { <a href="@Url.Action("Details", "Deployment", new { id = d.DeploymentId })">View</a> } else { <span>Not available</span> }</td></tr> }
+</tbody></table></div> }
+</div>
+<div class="projects-panel"><h3>Archive Project</h3><p>Archive this project without deleting its deployment history. Projects with unfinished deployments cannot be archived.</p>
+@using (Html.BeginForm("Archive", "Project", new { id = Model.ProjectId }, FormMethod.Post, new { onsubmit = "return confirm('Archive this project? Its deployment history will be retained.');" })) {
+@Html.AntiForgeryToken()<button type="submit" class="btn btn-outline-danger">Archive Project</button>
+}
+</div></div>

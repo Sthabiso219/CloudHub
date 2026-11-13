@@ -210,10 +210,10 @@ namespace CloudHub.Controllers
                 return RedirectToAction("Create");
             }
 
-            bool ownsProject = await db.Projects
-                .AnyAsync(p =>
-                    p.ProjectId == model.ProjectId.Value &&
-                    p.CustomerId == customer.CustomerId);
+            bool ownsProject = await db.Projects.AnyAsync(p =>
+            p.ProjectId == model.ProjectId.Value &&
+            p.CustomerId == customer.CustomerId &&
+           !p.IsArchived);     
 
             if (!ownsProject)
                 return HttpNotFound();

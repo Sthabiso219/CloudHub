@@ -32,5 +32,8 @@ namespace CloudHub.Models
 
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
+
+        public bool IsArchived { get; set; } = false;
+        public DateTime? ArchivedAt { get; set; }
     }
 }

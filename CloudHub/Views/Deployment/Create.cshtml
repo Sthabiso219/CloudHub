@@ -4,10 +4,10 @@
 
 @{
     ViewBag.Title = "Deploy Application";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     bool hasProjects = Model.Projects != null
-                       && Model.Projects.Any();
+               && Model.Projects.Any();
 
     string successMessage =
         TempData["DeploymentSuccess"] as string;

@@ -1,0 +1,21 @@
+@model CloudHub.Models.ViewModels.ProjectsPageViewModel
+@{
+    ViewBag.Title = "My Projects";
+    ViewBag.TopbarLabel = "Projects";
+    ViewBag.ActivePage = "projects";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<div class="projects-page">
+    <div class="projects-header"><div><h2>My Projects</h2><p>Manage your hosting projects</p></div><a class="deploy-button" href="@Url.Action("Create", "Project")"><i class="fas fa-plus"></i> New Project</a></div>
+    @if (TempData["ProjectSuccess"] != null) { <div class="alert alert-success" role="status">@TempData["ProjectSuccess"]</div> }
+    <form method="get" action="@Url.Action("Index", "Project")" class="projects-search"><input name="search" value="@Model.Search" maxlength="100" placeholder="Search projects" aria-label="Search projects" /><button type="submit" class="deploy-button">Search</button></form>
+    @if (!Model.Projects.Any()) {
+        <div class="projects-empty"><i class="fas fa-folder-open fa-2x"></i><h3>No projects found</h3><p>Create your first project or try another search.</p><a href="@Url.Action("Create", "Project")" class="deploy-button">Create Project</a></div>
+    } else {
+        <div class="projects-grid">
+        @foreach (var project in Model.Projects) {
+            <article class="projects-card"><div class="projects-icon"><i class="fas fa-globe"></i></div><h3>@project.ProjectName</h3><p>@project.Framework</p><p><span class="projects-dot"></span>@project.Status</p><p>@project.DeploymentCount deployment(s)</p><p>Latest: @(project.LatestDeploymentStatus ?? "Not deployed")</p><p class="projects-small">Created @project.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</p><a href="@Url.Action("Details", "Project", new { id = project.ProjectId })">Manage <i class="fas fa-arrow-right"></i></a></article>
+        }
+        </div>
+    }
+</div>
